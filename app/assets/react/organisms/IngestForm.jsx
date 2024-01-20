@@ -19,8 +19,8 @@ export default function IngestForm({id}) {
             },
             body: JSON.stringify({
                 seriesId: id,
-                season: ingestSeason,
-                episode: ingestEpisode,
+                season: Number(ingestSeason),
+                episode: Number(ingestEpisode),
                 platform: ingestPlatform,
                 universe: ingestUniverse
             })
@@ -48,11 +48,11 @@ export default function IngestForm({id}) {
             <div className="partialIngest">
                 <div className="partialIngestInput">
                     <label htmlFor={id + "season"}>Season: </label>
-                    <input name={id + "season"} type={"text"} placeholder={"1"} id={"season"} onChange={(e) => setIngestSeason(e.target.value)}></input>
+                    <input name={id + "season"} type={"number"} placeholder={"1"} id={"season"} onChange={(e) => setIngestSeason(e.target.value)}></input>
                 </div>
                 <div className="partialIngestInput">
                     <label htmlFor={id + "season"}>Episode: </label>
-                    <input name={id + "episode"} type={"text"} placeholder={"1"} id={"episode"} onChange={(e) => setIngestEpisode(e.target.value)}></input>
+                    <input name={id + "episode"} type={"number"} placeholder={"1"} id={"episode"} onChange={(e) => setIngestEpisode(e.target.value)}></input>
                 </div>
             </div>
             <select className={"platformSelect"} onChange={(e) => setIngestPlatform(e.target.value)}>
