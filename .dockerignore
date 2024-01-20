@@ -1,0 +1,15 @@
+*
+
+!/app/.env
+!/app/assets/
+!/app/bin/
+!/app/composer.*
+!/app/config/
+!/app/package*.json
+!/app/public/index.php
+!/app/src/
+!/app/symfony.lock
+!/app/templates/
+!/app/webpack.config.js
+!/cron/
+!/docker/

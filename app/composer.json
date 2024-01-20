@@ -1,0 +1,132 @@
+{
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.3",
+    "ext-ctype": "*",
+    "ext-iconv": "*",
+    "api-platform/core": "^3",
+    "doctrine/doctrine-bundle": "^2.10",
+    "doctrine/doctrine-migrations-bundle": "^3.2",
+    "doctrine/mongodb-odm-bundle": "^4.0",
+    "doctrine/orm": "^2.15",
+    "nelmio/cors-bundle": "^2.2",
+    "nyholm/psr7": "^1.8",
+    "phpdocumentor/reflection-docblock": "^5.3",
+    "phpstan/phpdoc-parser": "^1.16",
+    "symfony/asset": "6.4.*",
+    "symfony/cache": "6.4.*",
+    "symfony/clock": "6.4.*",
+    "symfony/console": "6.4.*",
+    "symfony/dependency-injection": "6.4.*",
+    "symfony/dotenv": "6.4.*",
+    "symfony/error-handler": "6.4.*",
+    "symfony/expression-language": "6.4.*",
+    "symfony/flex": "^2.2",
+    "symfony/framework-bundle": "6.4.*",
+    "symfony/http-client": "6.4.*",
+    "symfony/http-foundation": "6.4.*",
+    "symfony/http-kernel": "6.4.*",
+    "symfony/mercure-bundle": "^0.3.5",
+    "symfony/messenger": "6.4.*",
+    "symfony/monolog-bundle": "^3.8",
+    "symfony/property-access": "6.4.*",
+    "symfony/property-info": "6.4.*",
+    "symfony/routing": "6.4.*",
+    "symfony/runtime": "6.4.*",
+    "symfony/security-bundle": "6.4.*",
+    "symfony/security-core": "6.4.*",
+    "symfony/security-http": "6.4.*",
+    "symfony/serializer": "6.4.*",
+    "symfony/twig-bundle": "6.4.*",
+    "symfony/twig-bridge": "6.4.*",
+    "symfony/ux-react": "^2.10",
+    "symfony/validator": "6.4.*",
+    "symfony/var-exporter": "6.4.*",
+    "symfony/webpack-encore-bundle": "^2.0",
+    "symfony/yaml": "6.4.*",
+    "twig/extra-bundle": "^2.12|^3.0",
+    "twig/twig": "^2.12|^3.0"
+  },
+  "require-dev": {
+    "ext-mongodb": "*",
+    "api-platform/schema-generator": "^5.0",
+    "dg/bypass-finals": "^1.5",
+    "mockery/mockery": "^1.6",
+    "overtrue/phplint": "^9",
+    "phpmd/phpmd": "^2.15.0",
+    "phpunit/phpunit": "^10",
+    "squizlabs/php_codesniffer": "*",
+    "symfony/browser-kit": "6.4.*",
+    "symfony/css-selector": "6.4.*",
+    "symfony/debug-bundle": "6.4.*",
+    "symfony/dom-crawler": "6.4.*",
+    "symfony/maker-bundle": "^1.44",
+    "symfony/phpunit-bridge": "6.4.*",
+    "symfony/stopwatch": "6.4.*",
+    "symfony/var-dumper": "6.4.*",
+    "symfony/web-profiler-bundle": "6.4.*"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": {
+      "*": "dist"
+    },
+    "sort-packages": true,
+    "allow-plugins": {
+      "composer/package-versions-deprecated": true,
+      "symfony/flex": true,
+      "symfony/runtime": true
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "App\\Tests\\": "tests/"
+    }
+  },
+  "replace": {
+    "paragonie/random_compat": "2.*",
+    "symfony/polyfill-ctype": "*",
+    "symfony/polyfill-iconv": "*",
+    "symfony/polyfill-intl-grapheme": "*",
+    "symfony/polyfill-intl-normalizer": "*",
+    "symfony/polyfill-mbstring": "*",
+    "symfony/polyfill-php82": "*",
+    "symfony/polyfill-php81": "*",
+    "symfony/polyfill-php80": "*",
+    "symfony/polyfill-php72": "*"
+  },
+  "scripts": {
+    "auto-scripts": {
+      "cache:clear": "symfony-cmd",
+      "assets:install %PUBLIC_DIR%": "symfony-cmd"
+    },
+    "post-install-cmd": [
+      "@auto-scripts"
+    ],
+    "post-update-cmd": [
+      "@auto-scripts"
+    ],
+    "run-tests": "composer run-phpcs && composer run-phpunit && composer run-phpmd && composer run-phplint",
+    "run-phpcs": "vendor/bin/phpcs",
+    "run-phpmd": "vendor/bin/phpmd src text phpmd-src.xml --exclude src/Migrations/ && vendor/bin/phpmd tests text phpmd-tests.xml",
+    "run-phplint": "vendor/bin/phplint",
+    "run-phpunit": "vendor/bin/phpunit",
+    "run-coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-filter src/ --coverage-html coverage"
+  },
+  "conflict": {
+    "symfony/symfony": "*"
+  },
+  "extra": {
+    "symfony": {
+      "allow-contrib": false,
+      "require": "6.2.*",
+      "docker": false
+    }
+  }
+}

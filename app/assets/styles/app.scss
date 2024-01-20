@@ -1,0 +1,164 @@
+@import "~bootstrap/scss/bootstrap";
+
+// Source mixin
+@mixin make-container($padding-x: $container-padding-x) {
+  width: 100%;
+  max-width:540px;
+  padding-right: $padding-x;
+  padding-left: $padding-x;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@mixin img-container($padding-x: $container-padding-x) {
+  width: 100%;
+  max-width:175px;
+  padding-right: $padding-x;
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 10px;
+  float:left;
+}
+
+// Usage
+.custom-container {
+  @include make-container();
+}
+
+.poster-container {
+  @include img-container();
+}
+
+body{
+  background-color: #16171a;
+  //color: #6d6f78;
+  color:lightgrey;
+  margin-top:10px;
+  img{
+    border:5px solid lightcyan;
+  }
+  .component{
+    margin-bottom:5px;
+  }
+  #primary{
+    float:left;
+  }
+  #showDescription{
+    visibility:hidden;
+  }
+  #episodeDetails{
+    margin-bottom:0;
+  }
+  #episodeHeader{
+    min-height:55px;
+  }
+  .btn{
+    width:100%;
+  }
+  .bento{
+    border-radius: 10px;
+    background-color: #202020;
+    padding: 15px;
+  }
+  .searching{
+    margin-top:20px;
+  }
+  input{
+    width:100%;
+  }
+  .ingestCard{
+    width:100%;
+    float:left;
+    margin:10px 0;
+    h3{
+      text-align:center;
+      margin-bottom:10px;
+    }
+    .Collapsible {
+      background-color: white;
+      float:left;
+    }
+
+    .Collapsible__contentInner {
+      padding: 10px;
+      border: 1px solid #ebebeb;
+      border-top: 0; }
+    .Collapsible__contentInner p {
+      margin-bottom: 10px;
+      font-size: 14px;
+      line-height: 20px; }
+    .Collapsible__contentInner p:last-child {
+      margin-bottom: 0; }
+    .Collapsible__trigger {
+      display: block;
+      font-weight: 400;
+      text-decoration: none;
+      color: #333333;
+      position: relative;
+      border: 1px solid white;
+      padding: 10px;
+      background: #1e2334;
+      color: white;
+      text-align:center;
+    }
+    .Collapsible__trigger.is-disabled {
+      opacity: 0.5;
+      background-color: grey; }
+    .CustomTriggerCSS {
+      background-color: lightcoral;
+      transition: background-color 200ms ease; }
+    .CustomTriggerCSS--open {
+      background-color: darkslateblue; }
+    .Collapsible__custom-sibling {
+      padding: 5px;
+      font-size: 12px;
+      background-color: #CBB700;
+      color: black; }
+    .partialIngestInput{
+      width:45%;
+      float:left;
+      margin-left:1%;
+      margin-right:4%;
+      margin-bottom:10px;
+      label{
+        display: inline-block;
+        text-align: right;
+        float: left;
+        font-size: 1.3em;
+        color:black;
+        margin-right: 5px;
+      }
+      input{
+        width:55%;
+      }
+    }
+    .ingestForm{
+      width:100%;
+      float:left;
+      margin-bottom:10px;
+      .platformSelect{
+        width:100%;
+        float:left;
+        margin-bottom:10px;
+      }
+      .universeText{
+        margin-bottom:10px;
+      }
+    }
+  }
+  .ingestLink{
+    text-align:center;
+  }
+  #navButton {
+    margin-bottom: 20px;
+    a {
+      color: white;
+      text-decoration: none;
+    }
+  }
+  #nothing-found {
+    margin-top: 20px;
+    text-align: center;
+    color: white;
+  }
+}

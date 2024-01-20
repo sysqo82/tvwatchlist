@@ -1,0 +1,8 @@
+node_modules
+package-lock.json
+.idea
+.phpunit.cache
+
+# Local Netlify folder
+.netlify
+.env

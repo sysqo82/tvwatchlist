@@ -1,0 +1,51 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    env(MONGODB_URL): ''
+    env(MONGODB_DB): ''
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Kernel.php'
+
+    App\Api\TvdbAuthClient:
+        arguments:
+            $apikey: '%env(TVDB_APIKEY)%'
+            $pin: '%env(TVDB_PIN)%'
+
+
+    App\Entity\Api\Tvdb\Search\SeriesTitle:
+        factory: ['@App\Entity\Api\Tvdb\Search\SeriesTitleFactory', 'buildFromRequestStack' ]
+        arguments:
+            $requestStack: '@request_stack'
+
+    App\Entity\Ingest\Criteria:
+        factory: [ '@App\Entity\Ingest\CriteriaFactory', 'buildFromRequestStack' ]
+        arguments:
+            $requestStack: '@request_stack'
+
+    App\Swagger\SwaggerDecorator:
+        decorates: 'api_platform.openapi.normalizer'
+        arguments:
+          [
+              '@App\Swagger\SwaggerDecorator.inner',
+              '%kernel.project_dir%/config/services/swagger.yaml',
+          ]
+        autoconfigure: false
+        calls:
+            - setContainer: [ '@service_container' ]
+
+    Symfony\Component\Yaml\Parser: ~
