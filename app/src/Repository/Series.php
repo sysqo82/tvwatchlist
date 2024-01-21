@@ -81,7 +81,7 @@ class Series
             ->sort('airDate', 'ASC')
             ->limit(1);
 
-        return $builder->getAggregation()->getIterator()->toArray()[0]->seriesTitle ?? '';
+        return $builder->getAggregation()->getIterator()->toArray()[0]['seriesTitle'] ?? '';
     }
 
     public function getUnfinishedSeriesTitles(): array

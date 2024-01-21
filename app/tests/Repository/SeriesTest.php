@@ -281,12 +281,6 @@ class SeriesTest extends TestCase
 
     public static function latestTitleFromUniverseProvider(): array
     {
-        $episodeOne = new EpisodeDocument();
-        $episodeOne->seriesTitle = 'series1';
-
-        $episodeTwo = new EpisodeDocument();
-        $episodeTwo->seriesTitle = 'series2';
-
         return [
             'empty' => [
                 '',
@@ -295,8 +289,8 @@ class SeriesTest extends TestCase
             'first one' => [
                 'series1',
                 [
-                    $episodeOne,
-                    $episodeTwo
+                    ['seriesTitle' => 'series1'],
+                    ['seriesTitle' => 'series2']
                 ]
             ]
         ];
