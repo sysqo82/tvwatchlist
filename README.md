@@ -1,7 +1,3 @@
-<!-- BEGIN TEST RESULTS --> 
-[![Test](https://github.com/aussieveen/tvwatchlist/actions/workflows/ci-testing.yml/badge.svg?branch=main)](https://github.com/aussieveen/tvwatchlist/actions/workflows/ci-testing.yml)
-<!-- END TEST RESULTS -->
-
 # TV Watchlist
 
 This is a single page web application to allow a user to create a watchlist of TV shows.

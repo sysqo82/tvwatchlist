@@ -12,7 +12,7 @@ services:
     volumes:
       - ./app:/var/www/html:rw,cached
   nginx:
-    container_name: nginx
+    container_name: watchlist-nginx
     image: nginx:stable-alpine
     ports:
       - '${APP_PORT}:80'
