@@ -36,6 +36,7 @@ class UpdateUnfinishedSeries extends Command
         $ongoingSeries = $this->seriesRespository->getUnfinishedSeriesTitles();
 
         foreach ($ongoingSeries as $series) {
+            $output->writeln(sprintf("Getting episodes for %s", $series));
             // Find the first episode for the series that we've already ingested
             $firstEpisode = $this->episodeRepository->getFirstEpisodeForSeries($series);
             if ($firstEpisode === null) {
@@ -53,6 +54,7 @@ class UpdateUnfinishedSeries extends Command
 
             //Ingest the series
             $this->ingestProcess->ingest($criteria);
+            $output->writeln(sprintf("Ingested %s", $series));
         }
 
         return Command::SUCCESS;
