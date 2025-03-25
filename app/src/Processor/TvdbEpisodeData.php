@@ -23,7 +23,7 @@ class TvdbEpisodeData
             $series->addEpisode(new Episode(
                 (string) $episodeData['id'],
                 $episodeData['name'],
-                $episodeData['overview'],
+                $episodeData['overview'] ?? 'Overview unavailable',
                 $episodeData['aired'],
                 $episodeData['seasonNumber'],
                 $episodeData['number']
