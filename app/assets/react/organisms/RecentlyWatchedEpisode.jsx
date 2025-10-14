@@ -120,16 +120,14 @@ export default function RecentlyWatchedEpisode({episodeData, refreshState}) {
                             </p>
                         </div>
                         <p style={mobileStyles.description}>{episodeData.description}</p>
-                        <div style={mobileStyles.buttonContainerMobile}>
+                        <div className="d-flex gap-2 mt-2">
                             <UnwatchButton 
                                 id={episodeData.id} 
                                 refreshState={refreshState}
-                                style={mobileStyles.buttonContainerMobileButton}
                             />
                             <RemoveButton 
                                 id={episodeData.tvdbSeriesId} 
                                 refreshState={refreshState}
-                                style={mobileStyles.buttonContainerMobileButton}
                             />
                         </div>
                     </div>
@@ -161,7 +159,7 @@ export default function RecentlyWatchedEpisode({episodeData, refreshState}) {
                     </div>
                     <p style={mobileStyles.description}>{episodeData.description}</p>
                 </div>
-                <div style={mobileStyles.buttonContainer}>
+                <div className="d-flex flex-column gap-2">
                     <UnwatchButton id={episodeData.id} refreshState={refreshState}/>
                     <RemoveButton id={episodeData.tvdbSeriesId} refreshState={refreshState}/>
                 </div>

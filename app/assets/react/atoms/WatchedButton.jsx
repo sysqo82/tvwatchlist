@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function WatchedButton({id, refreshState, style}) {
+export default function WatchedButton({id, refreshState}) {
     const handleClick = () => {
         // Add confirmation dialog to prevent accidental clicks
         if (!window.confirm('Mark this episode as watched?')) {
@@ -49,9 +49,8 @@ export default function WatchedButton({id, refreshState, style}) {
                 className="btn btn-lg btn-block btn-success" 
                 type="button" 
                 onClick={handleClick}
-                style={style}
             >
-                Watched
+                Watched Episode
             </button>
         </div>
     )
