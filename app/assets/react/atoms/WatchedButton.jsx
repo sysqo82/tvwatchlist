@@ -1,7 +1,12 @@
 import React from 'react'
 
-export default function WatchedButton({id, refreshState}) {
+export default function WatchedButton({id, refreshState, style}) {
     const handleClick = () => {
+        // Add confirmation dialog to prevent accidental clicks
+        if (!window.confirm('Mark this episode as watched?')) {
+            return;
+        }
+
         const watchedEpisode = fetch('/api/episodes/' + id, {
             method: "PATCH",
             headers: {
@@ -40,7 +45,12 @@ export default function WatchedButton({id, refreshState}) {
 
     return (
         <div className="component text-center" id="watched">
-            <button className="btn btn-lg btn-block btn-success" type="button" onClick={handleClick}>
+            <button 
+                className="btn btn-lg btn-block btn-success" 
+                type="button" 
+                onClick={handleClick}
+                style={style}
+            >
                 Watched
             </button>
         </div>

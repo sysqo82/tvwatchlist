@@ -8,6 +8,7 @@ use App\Helper\NextUpHelper;
 use App\Repository\Episode;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class NextUpController extends AbstractController
@@ -19,16 +20,22 @@ class NextUpController extends AbstractController
     }
 
     #[Route('/api/nextup', name: 'next_up')]
-    public function search(): JsonResponse
+    public function search(Request $request): JsonResponse
     {
-        $seriesTitle = $this->nextUpEpisodeHelper->getSeriesNotOnRecentlyWatchedList();
-
-        if (!$seriesTitle) {
-            $seriesTitle = $this->nextUpEpisodeHelper->getSeriesFromRecentlyWatchedList();
-        }
-
-        return $seriesTitle
-            ? $this->json($this->episode->getLatestUnwatchedFromSeries($seriesTitle) ?? [])
-            : $this->json([]);
+        $limit = min(100, (int) $request->query->get('limit', 50)); // Max 100 episodes per request
+        $offset = max(0, (int) $request->query->get('offset', 0));
+        
+        $allUnwatchedEpisodes = $this->episode->getAllUnwatchedEpisodes($limit, $offset);
+        $totalCount = $this->episode->countAllUnwatchedEpisodes();
+        
+        return $this->json([
+            'episodes' => $allUnwatchedEpisodes,
+            'pagination' => [
+                'total' => $totalCount,
+                'limit' => $limit,
+                'offset' => $offset,
+                'hasMore' => ($offset + $limit) < $totalCount
+            ]
+        ]);
     }
 }

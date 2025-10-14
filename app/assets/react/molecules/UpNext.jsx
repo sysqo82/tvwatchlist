@@ -1,18 +1,25 @@
 import React from 'react';
 import { useState, useEffect } from "react";
 import ShowUpNext from "../organisms/ShowUpNext";
+import RecentlyWatched from "./RecentlyWatched";
 
 export default function UpNext() {
-    const [episodeData, setEpisodeData] = useState(null);
+    const [episodeData, setEpisodeData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState(null);
     const [showIngestLink, setShowIngestLink] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [pagination, setPagination] = useState({ total: 0, limit: 50, offset: 0, hasMore: false });
 
-    function refreshState() {
-        fetch(`/api/nextup`, {
+    function fetchEpisodes(offset = 0, append = false) {
+        if (!append) setLoading(true);
+        else setLoadingMore(true);
+        
+        fetch(`/api/nextup?limit=50&offset=${offset}`, {
             method: "GET",
             headers: {
-                "Content-Type": "application/json+ld"
+                "Content-Type": "application/json"
             }
         })
             .then((response) => {
@@ -21,38 +28,106 @@ export default function UpNext() {
                 }
                 return response.json();
             })
-            .then((episodeData) => {
-                if(episodeData.length === 0) {
+            .then((data) => {
+                if(data.episodes && data.episodes.length === 0 && offset === 0) {
                     setShowIngestLink(true);
-                    setEpisodeData(null);
+                    setEpisodeData([]);
                     return;
                 }
-                setEpisodeData(episodeData);
+                
+                if (data.episodes) {
+                    if (append) {
+                        setEpisodeData(prev => [...prev, ...data.episodes]);
+                    } else {
+                        setEpisodeData(data.episodes);
+                    }
+                    setPagination(data.pagination);
+                } else {
+                    // Fallback for old API response format
+                    if (append) {
+                        setEpisodeData(prev => [...prev, ...data]);
+                    } else {
+                        setEpisodeData(data);
+                    }
+                }
                 setError(null);
             })
             .catch((err) => {
                 setError(err.message);
-                setEpisodeData(null);
+                if (!append) setEpisodeData([]);
             })
             .finally(() => {
                 setLoading(false);
+                setLoadingMore(false);
+                // Trigger refresh of recently watched section
+                setRefreshTrigger(prev => prev + 1);
             });
     }
 
-    useEffect(() => { refreshState(); }, []);
+    function refreshState() {
+        setEpisodeData([]);
+        setPagination({ total: 0, limit: 50, offset: 0, hasMore: false });
+        fetchEpisodes(0, false);
+    }
+
+    function loadMoreEpisodes() {
+        if (pagination.hasMore && !loadingMore) {
+            fetchEpisodes(pagination.offset + pagination.limit, true);
+        }
+    }
+
+    useEffect(() => { fetchEpisodes(); }, []);
 
     return (
-        <div className={"bento"}>
+        <div>
+            {episodeData.length > 0 && (
+                <div className={"bento"} style={{marginBottom: '2rem'}}>
+                    <h1>Your Watchlist ({pagination.total || episodeData.length} unwatched episodes)</h1>
+                </div>
+            )}
             {showIngestLink && (
-                <h1 id="nothing-found">No shows found</h1>
+                <div className={"bento"}>
+                    <h1 id="nothing-found">No shows found</h1>
+                    <p>Start by adding some TV shows to your watchlist!</p>
+                </div>
             )}
-            {loading && <div>Loading...</div>}
+            {loading && (
+                <div className={"bento"}>
+                    <div>Loading your watchlist...</div>
+                </div>
+            )}
             {error && (
-                <div>{`There is a problem fetching the post data - ${error}`}</div>
+                <div className={"bento"}>
+                    <div>{`There is a problem fetching the post data - ${error}`}</div>
+                </div>
             )}
-            {episodeData &&
-                (<ShowUpNext episodeData={episodeData} refreshState={refreshState}/>)
+            {episodeData.length > 0 &&
+                episodeData.map((episode) => (
+                    <ShowUpNext key={episode.id} episodeData={episode} refreshState={refreshState}/>
+                ))
             }
+            {pagination.hasMore && (
+                <div className={"bento text-center"}>
+                    <button 
+                        className="btn btn-outline-primary"
+                        onClick={loadMoreEpisodes}
+                        disabled={loadingMore}
+                    >
+                        {loadingMore ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Loading more...
+                            </>
+                        ) : (
+                            `Load more episodes (${pagination.total - episodeData.length} remaining)`
+                        )}
+                    </button>
+                </div>
+            )}
+            <RecentlyWatched 
+                refreshTrigger={refreshTrigger} 
+                onRefresh={refreshState}
+            />
         </div>
     )
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function RemoveButton({id, refreshState}) {
+export default function RemoveButton({id, refreshState, style}) {
     const handleClick = () => {
         const removeSeries = fetch('/api/series/' + id, {
             method: "DELETE",
@@ -18,8 +18,13 @@ export default function RemoveButton({id, refreshState}) {
 
     return (
         <div className="component text-center" id="remove">
-            <button className="btn btn-lg btn-block btn-danger" type="button" onClick={handleClick}>
-                Remove Series
+            <button 
+                className="btn btn-lg btn-block btn-danger" 
+                type="button" 
+                onClick={handleClick}
+                style={style}
+            >
+                Remove
             </button>
         </div>
     )

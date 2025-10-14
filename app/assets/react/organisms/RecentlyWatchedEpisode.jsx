@@ -1,11 +1,13 @@
 import React from 'react';
-import WatchedButton from "../atoms/WatchedButton";
+import UnwatchButton from "../atoms/UnwatchButton";
 import RemoveButton from "../atoms/RemoveButton";
 
-export default function ShowUpNext({episodeData, refreshState}) {
+export default function RecentlyWatchedEpisode({episodeData, refreshState}) {
     const mobileStyles = {
         card: {
-            marginBottom: '1rem'
+            marginBottom: '1rem', 
+            backgroundColor: '#f8f9fa', 
+            borderLeft: '4px solid #28a745'
         },
         desktopLayout: {
             display: 'flex', 
@@ -29,7 +31,8 @@ export default function ShowUpNext({episodeData, refreshState}) {
         image: {
             width: '100%', 
             height: 'auto', 
-            borderRadius: '4px'
+            borderRadius: '4px', 
+            opacity: 0.7
         },
         contentContainer: {
             flex: '1'
@@ -42,7 +45,8 @@ export default function ShowUpNext({episodeData, refreshState}) {
         },
         seriesTitle: {
             margin: '0', 
-            fontSize: '1.25rem'
+            fontSize: '1.25rem', 
+            color: '#28a745'
         },
         episodeTitle: {
             margin: '0', 
@@ -54,10 +58,15 @@ export default function ShowUpNext({episodeData, refreshState}) {
             fontSize: '0.875rem', 
             color: '#888'
         },
+        watchedIndicator: {
+            color: '#28a745', 
+            fontWeight: 'bold'
+        },
         description: {
             margin: '0', 
             fontSize: '0.875rem', 
-            lineHeight: '1.4'
+            lineHeight: '1.4', 
+            color: '#666'
         },
         buttonContainer: {
             flex: '0 0 auto', 
@@ -107,11 +116,12 @@ export default function ShowUpNext({episodeData, refreshState}) {
                                 {episodeData.airDate && (
                                     <> • {new Date(episodeData.airDate.date || episodeData.airDate).toLocaleDateString()}</>
                                 )}
+                                <span style={mobileStyles.watchedIndicator}> • Watched ✓</span>
                             </p>
                         </div>
                         <p style={mobileStyles.description}>{episodeData.description}</p>
                         <div style={mobileStyles.buttonContainerMobile}>
-                            <WatchedButton 
+                            <UnwatchButton 
                                 id={episodeData.id} 
                                 refreshState={refreshState}
                                 style={mobileStyles.buttonContainerMobileButton}
@@ -146,12 +156,13 @@ export default function ShowUpNext({episodeData, refreshState}) {
                             {episodeData.airDate && (
                                 <> • {new Date(episodeData.airDate.date || episodeData.airDate).toLocaleDateString()}</>
                             )}
+                            <span style={mobileStyles.watchedIndicator}> • Watched ✓</span>
                         </p>
                     </div>
                     <p style={mobileStyles.description}>{episodeData.description}</p>
                 </div>
                 <div style={mobileStyles.buttonContainer}>
-                    <WatchedButton id={episodeData.id} refreshState={refreshState}/>
+                    <UnwatchButton id={episodeData.id} refreshState={refreshState}/>
                     <RemoveButton id={episodeData.tvdbSeriesId} refreshState={refreshState}/>
                 </div>
             </div>
