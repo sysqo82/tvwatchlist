@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function WatchedButton({id, refreshState}) {
+export default function WatchedButton({id, refreshState, size = "lg", className = ""}) {
     const handleClick = () => {
         // Add confirmation dialog to prevent accidental clicks
         if (!window.confirm('Mark this episode as watched?')) {
@@ -46,7 +46,7 @@ export default function WatchedButton({id, refreshState}) {
     return (
         <div className="component text-center" id="watched">
             <button 
-                className="btn btn-lg btn-block btn-success" 
+                className={`btn btn-${size} ${size === 'lg' ? 'btn-block' : ''} btn-success ${className}`}
                 type="button" 
                 onClick={handleClick}
             >

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function UnwatchButton({id, refreshState}) {
+export default function UnwatchButton({id, refreshState, size = "lg", variant = "warning", className = ""}) {
     const handleClick = () => {
         // First, unmark the episode as watched
         const unwatchedEpisode = fetch('/api/episodes/' + id, {
@@ -51,7 +51,7 @@ export default function UnwatchButton({id, refreshState}) {
     return (
         <div className="component text-center" id="unwatched">
             <button 
-                className="btn btn-lg btn-block btn-warning" 
+                className={`btn btn-${size} ${size === 'lg' ? 'btn-block' : ''} btn-${variant} ${className}`}
                 type="button" 
                 onClick={handleClick}
             >

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from "react";
-import RecentlyWatchedEpisode from "../organisms/RecentlyWatchedEpisode";
+import SeriesGroupRecentlyWatched from "../organisms/SeriesGroupRecentlyWatched";
 
 export default function RecentlyWatched({refreshTrigger, onRefresh}) {
     const [recentlyWatchedData, setRecentlyWatchedData] = useState([]);
@@ -41,6 +41,35 @@ export default function RecentlyWatched({refreshTrigger, onRefresh}) {
         }
     };
 
+    // Group episodes by series
+    const groupEpisodesBySeries = (episodes) => {
+        const grouped = episodes.reduce((acc, episode) => {
+            const seriesKey = episode.tvdbSeriesId || episode.seriesTitle;
+            if (!acc[seriesKey]) {
+                acc[seriesKey] = {
+                    seriesTitle: episode.seriesTitle,
+                    tvdbSeriesId: episode.tvdbSeriesId,
+                    poster: episode.poster,
+                    episodes: [],
+                    overview: episode.overview || "No synopsis available"
+                };
+            }
+            acc[seriesKey].episodes.push(episode);
+            return acc;
+        }, {});
+
+        // Convert to array and sort episodes within each series
+        return Object.values(grouped).map(series => ({
+            ...series,
+            episodes: series.episodes.sort((a, b) => {
+                if (a.season !== b.season) {
+                    return a.season - b.season;
+                }
+                return a.episode - b.episode;
+            })
+        }));
+    };
+
     useEffect(() => { 
         refreshRecentlyWatched(); 
     }, [refreshTrigger]);
@@ -65,6 +94,8 @@ export default function RecentlyWatched({refreshTrigger, onRefresh}) {
         return null; // Don't show the section if there are no recently watched episodes
     }
 
+    const groupedSeries = groupEpisodesBySeries(recentlyWatchedData);
+
     return (
         <div>
             <div className={"bento"} style={{marginTop: '2rem'}}>
@@ -73,10 +104,10 @@ export default function RecentlyWatched({refreshTrigger, onRefresh}) {
                     Made a mistake? Click "Unwatch" to move episodes back to your watchlist.
                 </p>
             </div>
-            {recentlyWatchedData.map((episode) => (
-                <RecentlyWatchedEpisode 
-                    key={episode.id} 
-                    episodeData={episode} 
+            {groupedSeries.map((seriesData) => (
+                <SeriesGroupRecentlyWatched
+                    key={seriesData.tvdbSeriesId || seriesData.seriesTitle}
+                    seriesData={seriesData}
                     refreshState={handleRefresh}
                 />
             ))}

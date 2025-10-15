@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from "react";
-import ShowUpNext from "../organisms/ShowUpNext";
+import SeriesGroup from "../organisms/SeriesGroup";
 import RecentlyWatched from "./RecentlyWatched";
 
 export default function UpNext() {
@@ -11,6 +11,39 @@ export default function UpNext() {
     const [showIngestLink, setShowIngestLink] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [pagination, setPagination] = useState({ total: 0, limit: 50, offset: 0, hasMore: false });
+
+    // Group episodes by series
+    function groupEpisodesBySeries(episodes) {
+        const grouped = {};
+        
+        episodes.forEach(episode => {
+            const seriesKey = episode.tvdbSeriesId || episode.seriesTitle;
+            
+            if (!grouped[seriesKey]) {
+                grouped[seriesKey] = {
+                    seriesTitle: episode.seriesTitle,
+                    tvdbSeriesId: episode.tvdbSeriesId,
+                    poster: episode.poster,
+                    overview: episode.overview || "No synopsis available", // Will be populated when we fetch series data
+                    episodes: []
+                };
+            }
+            
+            grouped[seriesKey].episodes.push(episode);
+        });
+        
+        // Sort episodes within each series by season and episode number
+        Object.values(grouped).forEach(series => {
+            series.episodes.sort((a, b) => {
+                if (a.season !== b.season) {
+                    return a.season - b.season;
+                }
+                return a.episode - b.episode;
+            });
+        });
+        
+        return Object.values(grouped);
+    }
 
     function fetchEpisodes(offset = 0, append = false) {
         if (!append) setLoading(true);
@@ -82,7 +115,7 @@ export default function UpNext() {
         <div>
             {episodeData.length > 0 && (
                 <div className={"bento"} style={{marginBottom: '2rem'}}>
-                    <h1>Your Watchlist ({pagination.total || episodeData.length} unwatched episodes)</h1>
+                    <h1>What to watch? ({pagination.total || episodeData.length} unwatched episodes)</h1>
                 </div>
             )}
             {showIngestLink && (
@@ -102,8 +135,12 @@ export default function UpNext() {
                 </div>
             )}
             {episodeData.length > 0 &&
-                episodeData.map((episode) => (
-                    <ShowUpNext key={episode.id} episodeData={episode} refreshState={refreshState}/>
+                groupEpisodesBySeries(episodeData).map((seriesData, index) => (
+                    <SeriesGroup 
+                        key={seriesData.tvdbSeriesId || index} 
+                        seriesData={seriesData} 
+                        refreshState={refreshState}
+                    />
                 ))
             }
             {pagination.hasMore && (
