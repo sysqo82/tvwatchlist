@@ -3,7 +3,7 @@ import UnwatchButton from "../atoms/UnwatchButton";
 import RemoveButton from "../atoms/RemoveButton";
 
 export default function SeriesGroupRecentlyWatched({ seriesData, refreshState }) {
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
     const [overview, setOverview] = useState("Loading synopsis...");
     const [network, setNetwork] = useState(null);
     const [networkLoading, setNetworkLoading] = useState(true);
