@@ -50,7 +50,7 @@ export default function WatchedButton({id, refreshState, size = "lg", className 
                 type="button" 
                 onClick={handleClick}
             >
-                Watched Episode
+                Watched
             </button>
         </div>
     )

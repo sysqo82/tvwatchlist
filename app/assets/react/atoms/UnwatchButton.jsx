@@ -55,7 +55,7 @@ export default function UnwatchButton({id, refreshState, size = "lg", variant = 
                 type="button" 
                 onClick={handleClick}
             >
-                Unwatch Episode
+                Unwatch
             </button>
         </div>
     )
