@@ -113,11 +113,6 @@ export default function UpNext() {
 
     return (
         <div>
-            {episodeData.length > 0 && (
-                <div className={"bento"} style={{marginBottom: '2rem'}}>
-                    <h1>What to watch? ({pagination.total || episodeData.length} unwatched episodes)</h1>
-                </div>
-            )}
             {showIngestLink && (
                 <div className={"bento"}>
                     <h1 id="nothing-found">No shows found</h1>
