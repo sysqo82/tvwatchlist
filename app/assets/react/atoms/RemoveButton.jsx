@@ -2,6 +2,11 @@ import React from 'react'
 
 export default function RemoveButton({id, refreshState, size = "lg", variant = "danger", className = ""}) {
     const handleClick = () => {
+        // Add confirmation dialog to prevent accidental series deletion
+        if (!window.confirm('Are you sure you want to remove this series? This action cannot be undone.')) {
+            return;
+        }
+
         const removeSeries = fetch('/api/series/' + id, {
             method: "DELETE",
             headers: {

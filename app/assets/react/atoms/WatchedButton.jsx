@@ -2,11 +2,6 @@ import React from 'react'
 
 export default function WatchedButton({id, refreshState, size = "lg", className = ""}) {
     const handleClick = () => {
-        // Add confirmation dialog to prevent accidental clicks
-        if (!window.confirm('Mark this episode as watched?')) {
-            return;
-        }
-
         const watchedEpisode = fetch('/api/episodes/' + id, {
             method: "PATCH",
             headers: {
