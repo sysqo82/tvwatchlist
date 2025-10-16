@@ -6,11 +6,9 @@ import RecentlyWatched from "./RecentlyWatched";
 export default function UpNext() {
     const [episodeData, setEpisodeData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState(null);
     const [showIngestLink, setShowIngestLink] = useState(false);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
-    const [pagination, setPagination] = useState({ total: 0, limit: 50, offset: 0, hasMore: false });
 
     // Group episodes by series
     function groupEpisodesBySeries(episodes) {
@@ -45,53 +43,60 @@ export default function UpNext() {
         return Object.values(grouped);
     }
 
-    function fetchEpisodes(offset = 0, append = false) {
-        if (!append) setLoading(true);
-        else setLoadingMore(true);
+    function fetchEpisodes() {
+        setLoading(true);
         
-        fetch(`/api/nextup?limit=50&offset=${offset}`, {
+        const startTime = performance.now();
+        console.log('🚀 Starting to fetch episodes...');
+        
+        fetch('/api/nextup', {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
             }
         })
             .then((response) => {
+                const apiResponseTime = performance.now();
+                console.log(`📡 API Response received in ${(apiResponseTime - startTime).toFixed(2)}ms`);
+                
                 if(!response.ok) {
                     throw new Error("Network response was not ok");
                 }
                 return response.json();
             })
             .then((data) => {
-                if(data.episodes && data.episodes.length === 0 && offset === 0) {
+                const jsonParseTime = performance.now();
+                console.log(`📄 JSON parsed in ${(jsonParseTime - startTime).toFixed(2)}ms`);
+                
+                if(data.episodes && data.episodes.length === 0) {
                     setShowIngestLink(true);
                     setEpisodeData([]);
                     return;
                 }
                 
+                let episodeCount = 0;
                 if (data.episodes) {
-                    if (append) {
-                        setEpisodeData(prev => [...prev, ...data.episodes]);
-                    } else {
-                        setEpisodeData(data.episodes);
-                    }
-                    setPagination(data.pagination);
+                    setEpisodeData(data.episodes);
+                    episodeCount = data.episodes.length;
                 } else {
                     // Fallback for old API response format
-                    if (append) {
-                        setEpisodeData(prev => [...prev, ...data]);
-                    } else {
-                        setEpisodeData(data);
-                    }
+                    setEpisodeData(data);
+                    episodeCount = data.length;
                 }
+                
+                console.log(`📺 Loaded ${episodeCount} episodes`);
                 setError(null);
             })
             .catch((err) => {
                 setError(err.message);
-                if (!append) setEpisodeData([]);
+                setEpisodeData([]);
+                console.error('❌ Error fetching episodes:', err.message);
             })
             .finally(() => {
+                const totalTime = performance.now();
+                console.log(`✅ Total fetch time: ${(totalTime - startTime).toFixed(2)}ms`);
+                
                 setLoading(false);
-                setLoadingMore(false);
                 // Trigger refresh of recently watched section
                 setRefreshTrigger(prev => prev + 1);
             });
@@ -99,17 +104,32 @@ export default function UpNext() {
 
     function refreshState() {
         setEpisodeData([]);
-        setPagination({ total: 0, limit: 50, offset: 0, hasMore: false });
-        fetchEpisodes(0, false);
+        fetchEpisodes();
     }
 
-    function loadMoreEpisodes() {
-        if (pagination.hasMore && !loadingMore) {
-            fetchEpisodes(pagination.offset + pagination.limit, true);
+    useEffect(() => { 
+        const pageStartTime = performance.now();
+        console.log('🏠 Homepage component mounting...');
+        
+        fetchEpisodes();
+        
+        // Measure render completion
+        const timeoutId = setTimeout(() => {
+            const pageEndTime = performance.now();
+            console.log(`🎯 Homepage fully rendered in ${(pageEndTime - pageStartTime).toFixed(2)}ms`);
+        }, 0);
+        
+        return () => clearTimeout(timeoutId);
+    }, []);
+
+    // Measure when episodes are actually rendered
+    useEffect(() => {
+        if (episodeData.length > 0 && !loading) {
+            const renderTime = performance.now();
+            console.log(`🖼️  Episodes rendered to DOM - Total episodes: ${episodeData.length}`);
+            console.log(`📊 Series groups created: ${groupEpisodesBySeries(episodeData).length}`);
         }
-    }
-
-    useEffect(() => { fetchEpisodes(); }, []);
+    }, [episodeData, loading]);
 
     return (
         <div>
@@ -138,24 +158,6 @@ export default function UpNext() {
                     />
                 ))
             }
-            {pagination.hasMore && (
-                <div className={"bento text-center"}>
-                    <button 
-                        className="btn btn-outline-primary"
-                        onClick={loadMoreEpisodes}
-                        disabled={loadingMore}
-                    >
-                        {loadingMore ? (
-                            <>
-                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                Loading more...
-                            </>
-                        ) : (
-                            `Load more episodes (${pagination.total - episodeData.length} remaining)`
-                        )}
-                    </button>
-                </div>
-            )}
             <RecentlyWatched 
                 refreshTrigger={refreshTrigger} 
                 onRefresh={refreshState}
