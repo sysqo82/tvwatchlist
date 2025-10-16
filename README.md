@@ -113,3 +113,28 @@ npm run watch
 ```
 
 This will watch for any changes to the js and css files and rebuild them when it detects a change.
+
+## Troubleshooting
+
+### MongoDB Hydrator Permission Errors
+
+If you encounter MongoDB ODM hydrator permission errors, the application now includes automatic fixes that run on container startup. The Docker entrypoint script automatically:
+
+- Clears problematic hydrator cache
+- Regenerates MongoDB hydrators and proxies
+- Sets proper file permissions
+- Warms up the cache
+
+If you still encounter permission issues after a container restart, you can manually run the permission fix command:
+
+```bash
+docker-compose exec app bash -c "rm -rf /var/www/html/var/cache/* && mkdir -p /var/www/html/var/cache/dev /var/www/html/var/cache/prod && chown -R www-data:www-data /var/www/html/var/cache && chmod -R 755 /var/www/html/var/cache"
+```
+
+Or restart the container to trigger the automatic fix:
+
+```bash
+docker-compose restart app
+```
+
+````

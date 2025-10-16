@@ -58,8 +58,8 @@ export default function Ingest() {
                 <div>{`There is a problem fetching the post data - ${error}`}</div>
             )}
             <div className={"bento"}>
-                <h1>Ingest TV series</h1>
-                <input value={inputValue} name="search" onChange={handleChange} placeholder="Search for tv show to ingest"/>
+                <h1>Show to search</h1>
+                <input value={inputValue} name="search" onChange={handleChange} placeholder="Search for a tv show"/>
             </div>
             {searching &&
                 <div className={"searching bento"}>Searching...</div>
@@ -72,7 +72,7 @@ export default function Ingest() {
                         title={show.title}
                     />
                     <p>{show.overview}</p>
-                    <Collapsible trigger="Ingest">
+                    <Collapsible trigger="Add this show">
                         <IngestForm
                             id={show.tvdbId}
                         />

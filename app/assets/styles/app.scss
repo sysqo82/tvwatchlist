@@ -161,4 +161,43 @@ body{
     text-align: center;
     color: white;
   }
+  
+  // Series table column widths
+  .series-table {
+    .col-season {
+      width: 80px;
+      text-align: center;
+    }
+    .col-episode {
+      width: 80px;
+      text-align: center;
+    }
+    .col-title {
+      text-align: left;
+    }
+    .col-actions {
+      width: 140px;
+    }
+  }
+  
+  // Series group styling
+  .series-group-recently-watched {
+    background-color: #f8f9fa;
+    border-left: 4px solid #28a745;
+    
+    .series-poster {
+      width: 120px;
+      height: auto;
+      border-radius: 8px;
+      opacity: 0.7;
+    }
+  }
+  
+  .series-group-main {
+    .series-poster {
+      width: 120px;
+      height: auto;
+      border-radius: 8px;
+    }
+  }
 }

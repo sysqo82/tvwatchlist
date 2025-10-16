@@ -23,12 +23,12 @@ export default function Application() {
                 <button className="btn btn-lg btn-block btn-primary" type="button" id="navButton" onClick={switchState}>
                     {
                         state === upNextForm && (
-                            "Find something to watch"
+                            "Add a show to watch"
                         )
                     }
                     {
                         state === ingestForm && (
-                            "Back to Up Next"
+                            "Back to What to watch"
                         )
                     }
                 </button>

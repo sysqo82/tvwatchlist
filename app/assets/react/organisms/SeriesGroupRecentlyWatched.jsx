@@ -5,6 +5,8 @@ import RemoveButton from "../atoms/RemoveButton";
 export default function SeriesGroupRecentlyWatched({ seriesData, refreshState }) {
     const [isExpanded, setIsExpanded] = useState(true);
     const [overview, setOverview] = useState("Loading synopsis...");
+    const [network, setNetwork] = useState(null);
+    const [networkLoading, setNetworkLoading] = useState(true);
     
     const { 
         seriesTitle, 
@@ -17,9 +19,10 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
         setIsExpanded(!isExpanded);
     };
 
-    // Fetch series overview from TVDB API
+    // Fetch series overview and network from TVDB API
     useEffect(() => {
         if (tvdbSeriesId) {
+            // Fetch overview
             fetch(`/api/series/${tvdbSeriesId}/overview`)
                 .then(response => response.json())
                 .then(data => {
@@ -28,13 +31,25 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
                 .catch(() => {
                     setOverview("No synopsis available");
                 });
+
+            // Fetch network information
+            fetch(`/api/series/${tvdbSeriesId}/network`)
+                .then(response => response.json())
+                .then(data => {
+                    setNetwork(data.network);
+                    setNetworkLoading(false);
+                })
+                .catch(() => {
+                    setNetworkLoading(false);
+                });
         } else {
             setOverview("No synopsis available");
+            setNetworkLoading(false);
         }
     }, [tvdbSeriesId]);
 
     return (
-        <div className="bento mb-3" style={{ backgroundColor: '#f8f9fa', borderLeft: '4px solid #28a745' }}>
+        <div className="bento mb-3 series-group-recently-watched">
             {/* Series Header */}
             <div className="d-flex align-items-start gap-3 mb-3">
                 {/* Series Poster */}
@@ -42,15 +57,23 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
                     <img 
                         src={poster} 
                         alt={seriesTitle}
-                        className="img-fluid"
-                        style={{ width: '120px', height: 'auto', borderRadius: '8px', opacity: 0.7 }}
+                        className="img-fluid series-poster"
                     />
                 </div>
                 
                 {/* Series Info */}
                 <div className="flex-grow-1">
                     <div className="d-flex justify-content-between align-items-start mb-2">
-                        <h3 className="mb-1 text-success">{seriesTitle}</h3>
+                        <div className="flex-grow-1">
+                            <h3 className="mb-1 text-success">{seriesTitle}</h3>
+                            {network && (
+                                <div className="mb-2">
+                                    <span className="badge bg-success me-2">
+                                        {network}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                         <div className="d-flex flex-column gap-2">
                             <button 
                                 className="btn btn-sm btn-outline-success"
@@ -75,13 +98,13 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
             {/* Episodes Table */}
             {isExpanded && (
                 <div className="table-responsive">
-                    <table className="table table-light table-hover table-sm">
+                    <table className="table table-light table-hover table-sm series-table">
                         <thead className="table-success">
                             <tr>
-                                <th scope="col" style={{ width: '80px' }}>Season</th>
-                                <th scope="col" style={{ width: '80px' }}>Episode</th>
-                                <th scope="col">Title</th>
-                                <th scope="col" style={{ width: '140px' }}>Actions</th>
+                                <th scope="col" className="col-season text-center">S</th>
+                                <th scope="col" className="col-episode text-center">Ep</th>
+                                <th scope="col" className="col-title">Title</th>
+                                <th scope="col" className="col-actions text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>

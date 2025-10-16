@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 
 export default function IngestForm({id}) {
 
@@ -6,11 +6,27 @@ export default function IngestForm({id}) {
     const [ingestDisabled, setIngestDisabled ] = useState('');
     const [ingestSeason, setIngestSeason ] = useState(1);
     const [ingestEpisode, setIngestEpisode ] = useState(1);
-    const [ingestPlatform, setIngestPlatform ] = useState("Plex");
-    const [ingestUniverse, setIngestUniverse ] = useState("");
+    const [tvdbNetwork, setTvdbNetwork ] = useState(null);
+    const [networkLoading, setNetworkLoading ] = useState(true);
+
+    // Fetch network information from TVDB
+    useEffect(() => {
+        fetch(`/api/series/${id}/network`)
+            .then(response => response.json())
+            .then(data => {
+                setTvdbNetwork(data.network);
+                setNetworkLoading(false);
+            })
+            .catch(error => {
+                console.log('Error fetching network data:', error);
+                setNetworkLoading(false);
+            });
+    }, [id]);
+
+
 
     function ingestShow(id) {
-        console.log("Ingesting show " + id + " on platform " + ingestPlatform + " season " + ingestSeason + " episode " + ingestEpisode + " universe " + ingestUniverse);
+        console.log("Ingesting show " + id + " season " + ingestSeason + " episode " + ingestEpisode);
         setIngestState('Ingesting...');
         fetch('/api/tvdb/series/ingest',{
             method: "POST",
@@ -20,9 +36,7 @@ export default function IngestForm({id}) {
             body: JSON.stringify({
                 seriesId: id,
                 season: Number(ingestSeason),
-                episode: Number(ingestEpisode),
-                platform: ingestPlatform,
-                universe: ingestUniverse
+                episode: Number(ingestEpisode)
             })
         })
         .then((response) => {
@@ -55,13 +69,13 @@ export default function IngestForm({id}) {
                     <input name={id + "episode"} type={"number"} placeholder={"1"} id={"episode"} onChange={(e) => setIngestEpisode(e.target.value)}></input>
                 </div>
             </div>
-            <select className={"platformSelect"} onChange={(e) => setIngestPlatform(e.target.value)}>
-                <option value="Plex">Plex</option>
-                <option value="Netflix">Netflix</option>
-                <option value="Disney Plus">Disney Plus</option>
-                <option value="Amazon Prime">Amazon Prime</option>
-            </select>
-            <input className={"universeText"} placeholder={"TV Universe"} name={"universe"} type={"text"} onChange={(e) => setIngestUniverse(e.target.value)}/>
+            {tvdbNetwork && (
+                <div className="network-info mb-3">
+                    <div className="badge bg-primary">
+                        Original Network: {tvdbNetwork}
+                    </div>
+                </div>
+            )}
             <button className={"btn btn-lg btn-block btn-dark " + ingestDisabled} type="button" onClick={() => ingestShow(id)}>
                 {ingestState}
             </button>
