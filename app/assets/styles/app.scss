@@ -200,4 +200,39 @@ body{
       border-radius: 8px;
     }
   }
+
+  .series-group-archive {
+    border-left: 4px solid #6c757d;
+    position: relative;
+    
+    &::before {
+      content: '📁';
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.2em;
+      opacity: 0.5;
+    }
+    
+    .series-poster {
+      width: 120px;
+      height: auto;
+      border-radius: 8px;
+      opacity: 0.8;
+      filter: grayscale(20%);
+    }
+    
+    .progress {
+      background-color: #343a40;
+      
+      .progress-bar {
+        background-color: #6c757d;
+      }
+    }
+    
+    // Style badges differently for archived items
+    .badge {
+      opacity: 0.8;
+    }
+  }
 }

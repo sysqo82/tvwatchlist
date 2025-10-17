@@ -49,3 +49,12 @@ services:
             - setContainer: [ '@service_container' ]
 
     Symfony\Component\Yaml\Parser: ~
+
+    # Archive related repositories
+    App\Repository\ArchivedSeries:
+        arguments:
+            $documentManager: '@doctrine_mongodb.odm.default_document_manager'
+    
+    App\Repository\Episode:
+        arguments:
+            $documentManager: '@doctrine_mongodb.odm.default_document_manager'
