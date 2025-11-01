@@ -33,7 +33,9 @@ class TvdbSeriesDataProvider
         $series = new Series(
             $tvdbSeriesId,
             $tvdbApiSeriesData['data']['name'],
-            $tvdbApiSeriesData['data']['image'],
+            isset($tvdbApiSeriesData['data']['image']) && $tvdbApiSeriesData['data']['image'] !== null
+                ? $tvdbApiSeriesData['data']['image']
+                : '',
             $tvdbApiSeriesData['data']['status']['id']
         );
 

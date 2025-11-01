@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import UnwatchButton from "../atoms/UnwatchButton";
 import RemoveButton from "../atoms/RemoveButton";
+import RefreshButton from "../atoms/RefreshButton";
 
 export default function SeriesGroupRecentlyWatched({ seriesData, refreshState }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [overview, setOverview] = useState("Loading synopsis...");
     const [network, setNetwork] = useState(null);
     const [networkLoading, setNetworkLoading] = useState(true);
+    const [imageError, setImageError] = useState(false);
     
     const { 
         seriesTitle, 
@@ -48,6 +50,14 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
         }
     }, [tvdbSeriesId]);
 
+    // Reset image error state when poster changes
+    useEffect(() => {
+        setImageError(false);
+    }, [poster]);
+
+    // Check if refresh is needed (missing poster, image error, or overview)
+    const needsRefresh = !poster || poster === '' || imageError || overview === "No synopsis available" || overview === "Loading synopsis...";
+
     return (
         <div className="bento mb-3 series-group-recently-watched">
             {/* Series Header */}
@@ -58,6 +68,11 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
                         src={poster} 
                         alt={seriesTitle}
                         className="img-fluid series-poster"
+                        onError={(e) => {
+                            e.target.onerror = null; // Prevent infinite loop
+                            e.target.src = '/build/images/fallback-image.png';
+                            setImageError(true); // Mark that image failed to load
+                        }}
                     />
                 </div>
                 
@@ -82,6 +97,15 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
                             >
                                 {isExpanded ? 'Collapse' : 'Expand'} ({episodes.length} episodes)
                             </button>
+                            {needsRefresh && (
+                                <RefreshButton 
+                                    tvdbSeriesId={tvdbSeriesId}
+                                    refreshState={refreshState}
+                                    size="sm"
+                                    variant="outline-info"
+                                    className="w-100"
+                                />
+                            )}
                             <RemoveButton 
                                 id={tvdbSeriesId} 
                                 refreshState={refreshState}

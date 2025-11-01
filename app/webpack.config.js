@@ -61,6 +61,12 @@ Encore
     // enables Sass/SCSS support
     .enableSassLoader()
 
+    // copy images to build directory
+    .copyFiles({
+        from: './images',
+        to: 'images/[path][name].[ext]'
+    })
+
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
 

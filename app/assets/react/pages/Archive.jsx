@@ -145,6 +145,10 @@ export default function Archive() {
                                         src={series.poster} 
                                         alt={series.seriesTitle}
                                         className="img-fluid series-poster"
+                                        onError={(e) => {
+                                            e.target.onerror = null; // Prevent infinite loop
+                                            e.target.src = '/build/images/fallback-image.png';
+                                        }}
                                     />
                                 </div>
                                 

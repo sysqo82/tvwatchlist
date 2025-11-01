@@ -49,7 +49,7 @@ class Ingest
             $episodeDocument->tvdbEpisodeId = $episode->tvdbId;
             $episodeDocument->seriesTitle = $series->title;
             $episodeDocument->tvdbSeriesId = $series->tvdbId;
-            $episodeDocument->poster = $series->poster;
+            $episodeDocument->poster = $series->getPoster();
             $episodeDocument->universe = $criteria->universe;
             $episodeDocument->platform = $criteria->platform;
             $episodeDocument->status = EpisodeDocument::VALID_STATUSES[$series->status];

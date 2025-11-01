@@ -6,6 +6,7 @@ namespace App\Entity\Tvdb;
 
 class Series
 {
+    public const FALLBACK_POSTER = '../../../../app/images/fallback-image.png';
     public readonly string $tvdbId;
     public readonly string $title;
     public readonly string $poster;
@@ -23,6 +24,14 @@ class Series
         $this->poster = $poster;
         $this->status = $status;
         $this->episodes = [];
+    }
+
+    /**
+     * Returns the poster or the fallback if missing.
+     */
+    public function getPoster(): string
+    {
+        return $this->poster !== '' ? $this->poster : self::FALLBACK_POSTER;
     }
 
     public function addEpisode(Episode $episode): void
