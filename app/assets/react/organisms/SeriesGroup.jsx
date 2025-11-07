@@ -132,22 +132,35 @@ export default function SeriesGroup({ seriesData, refreshState }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {episodes.map((episode) => (
-                                <tr key={episode.id}>
-                                    <td className="text-center fw-bold py-2">{episode.season}</td>
-                                    <td className="text-center fw-bold py-2">{episode.episode}</td>
-                                    <td className="py-2">
-                                        <div className="fw-bold text-light">{episode.title}</div>
-                                    </td>
-                                    <td className="py-2">
-                                        <WatchedButton 
-                                            id={episode.id} 
-                                            refreshState={refreshState}
-                                            size="sm"
-                                        />
-                                    </td>
-                                </tr>
-                            ))}
+                            {episodes.map((episode) => {
+                                // Check if title is generic like "Episode 1", "Episode 2", etc.
+                                const isGenericTitle = /^Episode \d+$/i.test(episode.title);
+                                const displayTitle = isGenericTitle && episode.description 
+                                    ? episode.description 
+                                    : episode.title;
+                                
+                                return (
+                                    <tr key={episode.id}>
+                                        <td className="text-center fw-bold py-2">{episode.season}</td>
+                                        <td className="text-center fw-bold py-2">{episode.episode}</td>
+                                        <td className="py-2">
+                                            <div className="fw-bold text-light">{displayTitle}</div>
+                                            {isGenericTitle && episode.description && (
+                                                <small className="text-muted d-block mt-1">
+                                                    (Generic title replaced with synopsis)
+                                                </small>
+                                            )}
+                                        </td>
+                                        <td className="py-2">
+                                            <WatchedButton 
+                                                id={episode.id} 
+                                                refreshState={refreshState}
+                                                size="sm"
+                                            />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
