@@ -16,7 +16,8 @@ class TvdbSeriesDataProvider
 
     public function __construct(
         private TvdbQueryClient $client,
-        private TvdbEpisodeData $episodeDataProcessor
+        private TvdbEpisodeData $episodeDataProcessor,
+        private \Psr\Log\LoggerInterface $logger
     ) {
     }
 
@@ -40,24 +41,37 @@ class TvdbSeriesDataProvider
         );
 
         foreach ($tvdbApiSeriesData['data']['seasons'] as $seasonData) {
+            $this->logger->info("Checking season: {$seasonData['number']}, type: {$seasonData['type']['id']}, id: {$seasonData['id']}");
+            
             if (
                 $seasonData['type']['id'] !== self::REGULAR_SEASON_TYPE
                 || $seasonData['number'] < $fromSeason
             ) {
+                $this->logger->info("Skipping season {$seasonData['number']} (type={$seasonData['type']['id']}, required type=" . self::REGULAR_SEASON_TYPE . ")");
                 continue;
             }
 
+            $this->logger->info("Fetching episodes for season {$seasonData['number']}, seasonId: {$seasonData['id']}");
             $seasonResponse = $this->client->seasonExtended((string) $seasonData['id']);
 
             $season = json_decode($seasonResponse->getContent(), true);
 
             if ($season['status'] !== 'success') {
+                $this->logger->error("Season API call failed for seasonId: {$seasonData['id']}");
                 return null;
+            }
+
+            $episodesCount = isset($season['data']['episodes']) ? count($season['data']['episodes']) : 0;
+            $this->logger->info("Season {$seasonData['number']} has {$episodesCount} episodes in the API response");
+            
+            if ($episodesCount === 0) {
+                $this->logger->warning("Season {$seasonData['number']} returned 0 episodes from TVDB API");
+                $this->logger->debug("Season data: " . json_encode($season['data']));
             }
 
             $this->episodeDataProcessor->addEpisodeDataToSeries(
                 $series,
-                $season['data']['episodes'],
+                $season['data']['episodes'] ?? [],
                 $seasonData['number'] === $fromSeason ? $fromEpisode : 1
             );
         }

@@ -27,9 +27,6 @@ export default function RefreshButton({ tvdbSeriesId, refreshState, size = "md",
             if (refreshState) {
                 refreshState();
             }
-            
-            // Optional: Show success message
-            console.log('Series refreshed:', data);
         } catch (error) {
             console.error('Error refreshing series:', error);
             alert(`Failed to refresh series: ${error.message}`);

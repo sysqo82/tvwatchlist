@@ -1,1 +1,3 @@
 0 */48 * * * /var/www/html/bin/console app:ingest-ongoing
+0 2 * * 0 /var/www/html/bin/console app:update-shows
+0 3 * * 0 /backup-db.sh

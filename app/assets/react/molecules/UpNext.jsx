@@ -2,9 +2,12 @@ import React from 'react';
 import { useState, useEffect } from "react";
 import SeriesGroup from "../organisms/SeriesGroup";
 import RecentlyWatched from "./RecentlyWatched";
+import RefreshButton from "../atoms/RefreshButton";
+import RemoveButton from "../atoms/RemoveButton";
 
 export default function UpNext() {
     const [episodeData, setEpisodeData] = useState([]);
+    const [showsData, setShowsData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showIngestLink, setShowIngestLink] = useState(false);
@@ -68,9 +71,10 @@ export default function UpNext() {
                 const jsonParseTime = performance.now();
                 console.log(`📄 JSON parsed in ${(jsonParseTime - startTime).toFixed(2)}ms`);
                 
-                if(data.episodes && data.episodes.length === 0) {
+                if((!data.episodes || data.episodes.length === 0) && (!data.shows || data.shows.length === 0)) {
                     setShowIngestLink(true);
                     setEpisodeData([]);
+                    setShowsData([]);
                     return;
                 }
                 
@@ -84,12 +88,19 @@ export default function UpNext() {
                     episodeCount = data.length;
                 }
                 
+                // Handle shows without episodes
+                if (data.shows) {
+                    setShowsData(data.shows);
+                    console.log(`📺 Loaded ${data.shows.length} show(s) without episodes`);
+                }
+                
                 console.log(`📺 Loaded ${episodeCount} episodes`);
                 setError(null);
             })
             .catch((err) => {
                 setError(err.message);
                 setEpisodeData([]);
+                setShowsData([]);
                 console.error('❌ Error fetching episodes:', err.message);
             })
             .finally(() => {
@@ -104,6 +115,7 @@ export default function UpNext() {
 
     function refreshState() {
         setEpisodeData([]);
+        setShowsData([]);
         fetchEpisodes();
     }
 
@@ -156,6 +168,46 @@ export default function UpNext() {
                         seriesData={seriesData} 
                         refreshState={refreshState}
                     />
+                ))
+            }
+            {showsData.length > 0 &&
+                showsData.map((show) => (
+                    <div key={show.id} className="bento show-no-episodes">
+                        <div className="d-flex align-items-start gap-3">
+                            <div className="flex-shrink-0">
+                                <img src={show.poster} alt={show.title} className="series-poster" />
+                            </div>
+                            <div className="flex-grow-1">
+                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                    <div className="flex-grow-1">
+                                        <h3 className="mb-1 text-light">{show.title}</h3>
+                                        <p className="no-episodes-message mb-2">
+                                            ⏳ No episodes available yet. Last checked: {new Date(show.lastChecked).toLocaleDateString('en-GB')}
+                                        </p>
+                                        <p className="platform-info mb-0">
+                                            Platform: {show.platform || 'N/A'} {show.universe && `• Universe: ${show.universe}`}
+                                        </p>
+                                    </div>
+                                    <div className="d-flex flex-column gap-2">
+                                        <RefreshButton 
+                                            tvdbSeriesId={show.tvdbSeriesId}
+                                            refreshState={refreshState}
+                                            size="sm"
+                                            variant="outline-warning"
+                                            className="w-100"
+                                        />
+                                        <RemoveButton 
+                                            id={show.tvdbSeriesId} 
+                                            refreshState={refreshState}
+                                            size="sm"
+                                            variant="outline-danger"
+                                            className="w-100"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 ))
             }
             <RecentlyWatched 

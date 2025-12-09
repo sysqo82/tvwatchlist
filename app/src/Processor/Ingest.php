@@ -6,34 +6,68 @@ namespace App\Processor;
 
 use App\DataProvider\TvdbSeriesDataProvider;
 use App\Document\Episode as EpisodeDocument;
+use App\Document\Show as ShowDocument;
 use App\Entity\Ingest\Criteria;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class Ingest
 {
     public function __construct(
         private DocumentManager $documentManager,
-        private TvdbSeriesDataProvider $tvdbSeriesDataProvider
+        private TvdbSeriesDataProvider $tvdbSeriesDataProvider,
+        private LoggerInterface $logger
     ) {
     }
 
-    public function ingest(Criteria $criteria): void
+    public function ingest(Criteria $criteria): array
     {
+        $this->logger->info("Starting ingestion for series ID: {$criteria->tvdbSeriesId}");
+        
         $series = $this->tvdbSeriesDataProvider->getSeries(
             $criteria->tvdbSeriesId,
             $criteria->season,
             $criteria->episode
         );
 
+        $this->logger->info("Series data retrieved: " . ($series ? $series->title : 'NULL'));
+
         if ($series === null) {
+            $this->logger->error("Series not found for ID: {$criteria->tvdbSeriesId}");
             throw new RuntimeException('Series not found');
         }
 
+        // Save or update the show record
+        $showRepository = $this->documentManager->getRepository(ShowDocument::class);
+        $showDocument = $showRepository->findOneBy(['tvdbSeriesId' => $criteria->tvdbSeriesId]);
+        
+        if (!$showDocument) {
+            $showDocument = new ShowDocument();
+            $showDocument->tvdbSeriesId = $criteria->tvdbSeriesId;
+            $showDocument->addedAt = new DateTimeImmutable();
+        }
+        
+        $showDocument->title = $series->title;
+        $showDocument->poster = $series->getPoster();
+        $showDocument->status = EpisodeDocument::VALID_STATUSES[$series->status] ?? 'upcoming';
+        $showDocument->platform = $criteria->platform;
+        $showDocument->universe = $criteria->universe;
+        $showDocument->lastChecked = new DateTimeImmutable();
+        
+        $episodes = $series->getEpisodes();
+        $episodeCount = count($episodes);
+        $showDocument->hasEpisodes = $episodeCount > 0;
+        
+        $this->documentManager->persist($showDocument);
+        $this->documentManager->flush();
+        
+        $this->logger->info("Ingesting series: {$series->title}, Found {$episodeCount} episodes");
+
         $episodeRepository = $this->documentManager->getRepository(EpisodeDocument::class);
 
-        foreach ($series->getEpisodes() as $episode) {
+        foreach ($episodes as $episode) {
             $episodeDocument = $episodeRepository->findOneBy([
                 'tvdbEpisodeId' => $episode->tvdbId
             ]);
@@ -56,7 +90,13 @@ class Ingest
             $episodeDocument->airDate = new DateTimeImmutable($episode->aired);
 
             $this->documentManager->persist($episodeDocument);
-            $this->documentManager->flush();
         }
+        
+        $this->documentManager->flush();
+        
+        return [
+            'seriesTitle' => $series->title,
+            'episodeCount' => $episodeCount
+        ];
     }
 }

@@ -179,6 +179,31 @@ body{
     }
   }
   
+  // Show without episodes styling
+  .show-no-episodes {
+    opacity: 0.8;
+    border-left: 4px solid #ffc107;
+    
+    .series-poster {
+      width: 120px;
+      height: auto;
+      border-radius: 8px;
+      opacity: 0.6;
+      filter: grayscale(30%);
+    }
+    
+    .no-episodes-message {
+      color: #ffc107;
+      font-style: italic;
+      margin: 10px 0;
+    }
+    
+    .platform-info {
+      color: #999;
+      font-size: 0.9em;
+    }
+  }
+  
   // Series group styling
   .series-group-recently-watched {
     background-color: #f8f9fa;

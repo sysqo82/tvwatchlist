@@ -12,6 +12,7 @@ services:
       XDEBUG_MODE: "off"
     volumes:
       - ./app:/var/www/html:rw,cached
+      - ./cron:/cron:ro
     networks:
       - app-network
     expose:
