@@ -8,6 +8,7 @@ import RemoveButton from "../atoms/RemoveButton";
 export default function UpNext() {
     const [episodeData, setEpisodeData] = useState([]);
     const [showsData, setShowsData] = useState([]);
+    const [movieData, setMovieData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showIngestLink, setShowIngestLink] = useState(false);
@@ -71,10 +72,11 @@ export default function UpNext() {
                 const jsonParseTime = performance.now();
                 console.log(`📄 JSON parsed in ${(jsonParseTime - startTime).toFixed(2)}ms`);
                 
-                if((!data.episodes || data.episodes.length === 0) && (!data.shows || data.shows.length === 0)) {
+                if((!data.episodes || data.episodes.length === 0) && (!data.shows || data.shows.length === 0) && (!data.movies || data.movies.length === 0)) {
                     setShowIngestLink(true);
                     setEpisodeData([]);
                     setShowsData([]);
+                    setMovieData([]);
                     return;
                 }
                 
@@ -94,6 +96,12 @@ export default function UpNext() {
                     console.log(`📺 Loaded ${data.shows.length} show(s) without episodes`);
                 }
                 
+                // Handle movies
+                if (data.movies) {
+                    setMovieData(data.movies);
+                    console.log(`🎬 Loaded ${data.movies.length} movie(s)`);
+                }
+                
                 console.log(`📺 Loaded ${episodeCount} episodes`);
                 setError(null);
             })
@@ -101,6 +109,7 @@ export default function UpNext() {
                 setError(err.message);
                 setEpisodeData([]);
                 setShowsData([]);
+                setMovieData([]);
                 console.error('❌ Error fetching episodes:', err.message);
             })
             .finally(() => {
@@ -116,7 +125,31 @@ export default function UpNext() {
     function refreshState() {
         setEpisodeData([]);
         setShowsData([]);
+        setMovieData([]);
         fetchEpisodes();
+    }
+
+    function markMovieAsWatched(movieId) {
+        fetch(`/api/movies/${movieId}/watched`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to mark movie as watched');
+                }
+                return response.json();
+            })
+            .then(() => {
+                console.log('✅ Movie marked as watched');
+                refreshState();
+            })
+            .catch(err => {
+                console.error('❌ Error marking movie as watched:', err);
+                alert('Failed to mark movie as watched');
+            });
     }
 
     useEffect(() => { 
@@ -205,6 +238,59 @@ export default function UpNext() {
                                         />
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            }
+            {movieData.length > 0 &&
+                movieData.map((movie) => (
+                    <div key={movie.id} className="bento mb-3 movie-item">
+                        <div className="d-flex align-items-start gap-3">
+                            <div className="flex-shrink-0">
+                                <img 
+                                    src={movie.poster} 
+                                    alt={movie.title} 
+                                    className="series-poster"
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = '/build/images/fallback-image.png';
+                                    }}
+                                />
+                            </div>
+                            <div className="flex-grow-1">
+                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                    <div className="flex-grow-1">
+                                        <h3 className="mb-1 text-light">
+                                            {movie.title}
+                                        </h3>
+                                        <div className="mb-2">
+                                            <span className="badge bg-info">Movie</span>
+                                            {movie.platform && (
+                                                <span className="badge bg-primary ms-2">{movie.platform}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="d-flex flex-column gap-2">
+                                        <button 
+                                            className="btn btn-sm btn-success w-100"
+                                            onClick={() => markMovieAsWatched(movie.id)}
+                                        >
+                                            Mark as Watched
+                                        </button>
+                                        <RemoveButton 
+                                            id={movie.id} 
+                                            refreshState={refreshState}
+                                            size="sm"
+                                            variant="outline-danger"
+                                            className="w-100"
+                                            type="movie"
+                                        />
+                                    </div>
+                                </div>
+                                <p className="text-light mb-0 small">
+                                    {movie.description || "No synopsis available"}
+                                </p>
                             </div>
                         </div>
                     </div>

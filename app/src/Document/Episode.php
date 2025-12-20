@@ -88,6 +88,7 @@ class Episode
     #[Assert\NotBlank]
     public string $seriesTitle;
 
+    #[Groups(['episode:read'])]
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     public string $tvdbSeriesId;

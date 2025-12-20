@@ -1,16 +1,23 @@
 import React from 'react'
 
-export default function RemoveButton({id, refreshState, size = "lg", variant = "danger", className = ""}) {
+export default function RemoveButton({id, refreshState, size = "lg", variant = "danger", className = "", type = "series"}) {
     const handleClick = () => {
-        // Add confirmation dialog to prevent accidental series removal
-        if (!window.confirm('Are you sure you want to remove this series from your watchlist? It will be moved to the archive.')) {
+        const itemType = type === 'movie' ? 'movie' : 'series';
+        const confirmMessage = `Are you sure you want to remove this ${itemType} from your watchlist? It will be moved to the archive.`;
+        
+        // Add confirmation dialog to prevent accidental removal
+        if (!window.confirm(confirmMessage)) {
             return;
         }
 
-        const removeSeries = fetch('/api/series/' + id, {
-            method: "DELETE",
+        // Archive endpoint for both movies and series
+        const endpoint = type === 'movie' ? `/api/movies/${id}/archive` : `/api/series/${id}`;
+        const method = type === 'movie' ? 'POST' : 'DELETE';
+        
+        const removeItem = fetch(endpoint, {
+            method: method,
             headers: {
-                "Content-Type": "application/delete+json"
+                "Content-Type": "application/json"
             }
         }).then((response) => {
             if (!response.ok) {
@@ -21,6 +28,8 @@ export default function RemoveButton({id, refreshState, size = "lg", variant = "
         });
     };
 
+    const buttonText = type === 'movie' ? 'Remove Movie' : 'Remove Series';
+
     return (
         <div className="component text-center" id="remove">
             <button 
@@ -28,7 +37,7 @@ export default function RemoveButton({id, refreshState, size = "lg", variant = "
                 type="button" 
                 onClick={handleClick}
             >
-                Remove Series
+                {buttonText}
             </button>
         </div>
     )

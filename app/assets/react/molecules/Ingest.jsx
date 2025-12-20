@@ -25,21 +25,36 @@ export default function Ingest() {
     function searchShows(string) {
         console.log("searching for " + string)
         setSearching(true);
-        fetch(`/api/tvdb/search/series?seriesTitle=`+string, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json+ld"
-            }
-        })
-        .then((response) => {
-            if(!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            return response.json();
-        })
-        .then((showData) => {
-            console.log("Got show data " + showData);
-            setShowData(showData);
+        
+        // Search both series and movies
+        Promise.all([
+            fetch(`/api/tvdb/search/series?seriesTitle=`+string, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json+ld"
+                }
+            }).then(r => r.json()),
+            fetch(`/api/tvdb/search/movies?movieTitle=`+string, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json+ld"
+                }
+            }).then(r => r.json())
+        ])
+        .then(([seriesData, movieData]) => {
+            console.log("Got series data:", seriesData);
+            console.log("Got movie data:", movieData);
+            
+            // Combine results, adding a type field to distinguish
+            const series = (seriesData.data || []).map(item => ({ ...item, type: 'series' }));
+            const movies = (movieData.data || []).map(item => ({ ...item, type: 'movie' }));
+            
+            setShowData({
+                status: 200,
+                title: 'OK',
+                data: [...series, ...movies]
+            });
+            setError(null);
         })
         .catch((err) => {
             setError(err.message);
@@ -59,22 +74,28 @@ export default function Ingest() {
             )}
             <div className={"bento"}>
                 <h1>Show to search</h1>
-                <input value={inputValue} name="search" onChange={handleChange} placeholder="Search for a tv show"/>
+                <input value={inputValue} name="search" onChange={handleChange} placeholder="Search for a TV show or movie"/>
             </div>
             {searching &&
                 <div className={"searching bento"}>Searching...</div>
             }
             {showData && showData.data.map((show) => (
                 <div key={show.tvdbId} className="ingestCard bento">
-                    <h3>{show.title}</h3>
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                        <h3 className="mb-0">{show.title}</h3>
+                        <span className={`badge ${show.type === 'movie' ? 'bg-info' : 'bg-primary'}`}>
+                            {show.type === 'movie' ? 'Movie' : 'Series'}
+                        </span>
+                    </div>
                     <ShowPoster
                         image={show.poster}
                         title={show.title}
                     />
                     <p>{show.overview}</p>
-                    <Collapsible trigger="Add this show">
+                    <Collapsible trigger={`Add this ${show.type === 'movie' ? 'movie' : 'show'}`}>
                         <IngestForm
                             id={show.tvdbId}
+                            type={show.type}
                         />
                     </Collapsible>
                 </div>

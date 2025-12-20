@@ -50,8 +50,7 @@ export default function RecentlyWatched({refreshTrigger, onRefresh}) {
                     seriesTitle: episode.seriesTitle,
                     tvdbSeriesId: episode.tvdbSeriesId,
                     poster: episode.poster,
-                    episodes: [],
-                    overview: episode.overview || "No synopsis available"
+                    episodes: []
                 };
             }
             acc[seriesKey].episodes.push(episode);
@@ -94,16 +93,77 @@ export default function RecentlyWatched({refreshTrigger, onRefresh}) {
         return null; // Don't show the section if there are no recently watched episodes
     }
 
-    const groupedSeries = groupEpisodesBySeries(recentlyWatchedData);
+    // Separate movies and episodes
+    const movies = recentlyWatchedData.filter(item => item.isMovie);
+    const episodes = recentlyWatchedData.filter(item => !item.isMovie);
+    const groupedSeries = groupEpisodesBySeries(episodes);
 
     return (
         <div>
-            <div className={"bento"} style={{marginTop: '2rem'}}>
-                <h2>Recently Watched ({recentlyWatchedData.length} episodes)</h2>
-                <p style={{color: '#666', fontSize: '0.875rem', margin: '0.5rem 0 0 0'}}>
+            <div className="bento recently-watched-header">
+                <h2>Recently Watched ({recentlyWatchedData.length} {recentlyWatchedData.length === 1 ? 'item' : 'items'})</h2>
+                <p className="recently-watched-subtitle">
                     Made a mistake? Click "Unwatch" to move episodes back to your watchlist.
                 </p>
             </div>
+            {movies.map((movie) => (
+                <div key={movie.seriesTitle} className="bento mb-3 movie-item-recently-watched">
+                    <div className="d-flex align-items-start gap-3">
+                        <div className="flex-shrink-0">
+                            <img 
+                                src={movie.poster || '/build/images/fallback-image.png'} 
+                                alt={movie.seriesTitle}
+                                className="series-poster"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/build/images/fallback-image.png';
+                                }}
+                            />
+                        </div>
+                        <div className="flex-grow-1">
+                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div className="flex-grow-1">
+                                    <h3 className="mb-1 text-success">
+                                        {movie.seriesTitle}
+                                    </h3>
+                                    <div className="mb-2">
+                                        <span className="badge bg-success">Movie</span>
+                                        <span className="text-success ms-2">✓ Watched on {new Date(movie.watchedAt).toLocaleDateString('en-GB')}</span>
+                                    </div>
+                                </div>
+                                <div className="d-flex gap-2">
+                                    <button 
+                                        className="btn btn-sm btn-warning"
+                                        onClick={() => {
+                                            if (confirm(`Unwatch "${movie.seriesTitle}"? It will go back to your watchlist as unwatched.`)) {
+                                                fetch(`/api/movies/${movie.movieId}/unwatch`, {
+                                                    method: 'PATCH'
+                                                }).then(() => handleRefresh());
+                                            }
+                                        }}
+                                    >
+                                        Unwatch
+                                    </button>
+                                    <button 
+                                        className="btn btn-sm btn-danger"
+                                        onClick={() => {
+                                            if (confirm(`Archive "${movie.seriesTitle}"? It will be moved to the Archive section.`)) {
+                                                // Archive the movie
+                                                fetch(`/api/movies/${movie.movieId}/archive`, {
+                                                    method: 'POST'
+                                                }).then(() => handleRefresh());
+                                            }
+                                        }}
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                            <p className="text-muted mb-0 small">{movie.description || 'No synopsis available'}</p>
+                        </div>
+                    </div>
+                </div>
+            ))}
             {groupedSeries.map((seriesData) => (
                 <SeriesGroupRecentlyWatched
                     key={seriesData.tvdbSeriesId || seriesData.seriesTitle}

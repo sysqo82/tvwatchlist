@@ -19,8 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(),
         new GetCollection(),
-        new Post(),
-        new Delete()
+        new Post()
     ],
     normalizationContext: [
         'groups' => ['history:read'],
@@ -51,9 +50,33 @@ class History
     public string $seriesTitle;
 
     #[Groups(['history:read','history:write'])]
+    #[ODM\Field(type: 'string', nullable: true)]
+    public ?string $tvdbSeriesId = null;
+
+    #[Groups(['history:read','history:write'])]
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     public string $episodeTitle;
+
+    #[Groups(['history:read','history:write'])]
+    #[ODM\Field(type: 'string', nullable: true)]
+    public ?string $episodeDescription = null;
+
+    #[Groups(['history:read','history:write'])]
+    #[ODM\Field(type: 'integer', nullable: true)]
+    public ?int $season = null;
+
+    #[Groups(['history:read','history:write'])]
+    #[ODM\Field(type: 'integer', nullable: true)]
+    public ?int $episode = null;
+
+    #[Groups(['history:read','history:write'])]
+    #[ODM\Field(type: 'string', nullable: true)]
+    public ?string $episodeId = null;
+
+    #[Groups(['history:read','history:write'])]
+    #[ODM\Field(type: 'string', nullable: true)]
+    public ?string $movieId = null;
 
     #[Groups(['history:read','history:write'])]
     #[ODM\Field(type: 'string')]
@@ -68,4 +91,8 @@ class History
     #[ODM\Field(type: 'date')]
     #[Assert\NotBlank]
     public DateTimeInterface $watchedAt;
+
+    #[Groups(['history:read','history:write'])]
+    #[ODM\Field(type: 'string', nullable: true)]
+    public ?string $poster = null;
 }

@@ -27,9 +27,15 @@ export default function WatchedButton({id, refreshState, size = "lg", className 
                 },
                 body: JSON.stringify({
                     seriesTitle: episode.seriesTitle,
+                    tvdbSeriesId: episode.tvdbSeriesId,
                     episodeTitle: episode.title,
+                    episodeDescription: episode.description,
+                    season: episode.season,
+                    episode: episode.episode,
+                    episodeId: episode.id.toString(),
                     airDate: episode.airDate,
                     universe: episode.universe ?? null,
+                    poster: episode.poster,
                     watchedAt: date
                 })
             });

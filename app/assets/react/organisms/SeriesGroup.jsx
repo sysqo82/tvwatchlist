@@ -145,11 +145,6 @@ export default function SeriesGroup({ seriesData, refreshState }) {
                                         <td className="text-center fw-bold py-2">{episode.episode}</td>
                                         <td className="py-2">
                                             <div className="fw-bold text-light">{displayTitle}</div>
-                                            {isGenericTitle && episode.description && (
-                                                <small className="text-muted d-block mt-1">
-                                                    (Generic title replaced with synopsis)
-                                                </small>
-                                            )}
                                         </td>
                                         <td className="py-2">
                                             <WatchedButton 

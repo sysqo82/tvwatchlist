@@ -24,7 +24,7 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
     // Fetch series overview and network from TVDB API
     useEffect(() => {
         if (tvdbSeriesId) {
-            // Fetch overview
+            // Fetch overview from API
             fetch(`/api/series/${tvdbSeriesId}/overview`)
                 .then(response => response.json())
                 .then(data => {
@@ -97,15 +97,6 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
                             >
                                 {isExpanded ? 'Collapse' : 'Expand'} ({episodes.length} episodes)
                             </button>
-                            {needsRefresh && (
-                                <RefreshButton 
-                                    tvdbSeriesId={tvdbSeriesId}
-                                    refreshState={refreshState}
-                                    size="sm"
-                                    variant="outline-info"
-                                    className="w-100"
-                                />
-                            )}
                             <RemoveButton 
                                 id={tvdbSeriesId} 
                                 refreshState={refreshState}
@@ -134,32 +125,32 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
                         <tbody>
                             {episodes.map((episode) => {
                                 // Check if title is generic like "Episode 1", "Episode 2", etc.
-                                const isGenericTitle = /^Episode \d+$/i.test(episode.title);
-                                const displayTitle = isGenericTitle && episode.description 
-                                    ? episode.description 
-                                    : episode.title;
+                                const isGenericTitle = /^Episode \d+$/i.test(episode.episodeTitle || '');
+                                const displayTitle = isGenericTitle && episode.episodeDescription 
+                                    ? episode.episodeDescription 
+                                    : episode.episodeTitle;
                                 
                                 return (
-                                    <tr key={episode.id}>
-                                        <td className="text-center fw-bold py-2">{episode.season}</td>
-                                        <td className="text-center fw-bold py-2">{episode.episode}</td>
+                                    <tr key={episode.historyId}>
+                                        <td className="text-center fw-bold py-2">{episode.season || 'N/A'}</td>
+                                        <td className="text-center fw-bold py-2">{episode.episode || 'N/A'}</td>
                                         <td className="py-2">
                                             <div className="fw-bold text-success">
                                                 {displayTitle}
                                                 <span className="text-success ms-2">✓ Watched</span>
                                             </div>
-                                            {isGenericTitle && episode.description && (
-                                                <small className="text-muted d-block mt-1">
-                                                    (Generic title replaced with synopsis)
-                                                </small>
-                                            )}
                                         </td>
                                         <td className="py-2">
-                                            <UnwatchButton 
-                                                id={episode.id} 
-                                                refreshState={refreshState}
-                                                size="sm"
-                                            />
+                                            <button
+                                                className="btn btn-sm btn-warning"
+                                                onClick={() => {
+                                                    fetch(`/api/histories/${episode.historyId}`, {
+                                                        method: 'DELETE'
+                                                    }).then(() => refreshState());
+                                                }}
+                                            >
+                                                Unwatch
+                                            </button>
                                         </td>
                                     </tr>
                                 );

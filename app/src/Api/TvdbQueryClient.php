@@ -39,6 +39,27 @@ class TvdbQueryClient extends TvdbClientBase
         }
     }
 
+    public function searchMovies(string $movieTitle): ResponseInterface
+    {
+        try {
+            return $this->httpClient->request(
+                'GET',
+                self::TVDB_API_BASE_URL . 'search',
+                [
+                    'query' => [
+                        'query' => $movieTitle,
+                        'type' => 'movie'
+                    ],
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $this->tokenProvider->getToken()
+                    ]
+                ]
+            );
+        } catch (TransportExceptionInterface $e) {
+            throw new RuntimeException('Error while searching for movies', 0, $e);
+        }
+    }
+
     public function seriesExtended(string $seriesId): ResponseInterface
     {
         try {
@@ -70,6 +91,40 @@ class TvdbQueryClient extends TvdbClientBase
             );
         } catch (TransportExceptionInterface $e) {
             throw new RuntimeException('Error while getting extended season data', 0, $e);
+        }
+    }
+
+    public function movieExtended(string $movieId): ResponseInterface
+    {
+        try {
+            return $this->httpClient->request(
+                'GET',
+                self::TVDB_API_BASE_URL . 'movies/' . $movieId . '/extended?meta=translations',
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $this->tokenProvider->getToken()
+                    ]
+                ]
+            );
+        } catch (TransportExceptionInterface $e) {
+            throw new RuntimeException('Error while getting extended movie data', 0, $e);
+        }
+    }
+    
+    public function movieTranslations(string $movieId, string $language = 'eng'): ResponseInterface
+    {
+        try {
+            return $this->httpClient->request(
+                'GET',
+                self::TVDB_API_BASE_URL . 'movies/' . $movieId . '/translations/' . $language,
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $this->tokenProvider->getToken()
+                    ]
+                ]
+            );
+        } catch (TransportExceptionInterface $e) {
+            throw new RuntimeException('Error while getting movie translations', 0, $e);
         }
     }
 }

@@ -26,14 +26,22 @@ services:
             $apikey: '%env(TVDB_APIKEY)%'
             $pin: '%env(TVDB_PIN)%'
 
-
     App\Entity\Api\Tvdb\Search\SeriesTitle:
         factory: ['@App\Entity\Api\Tvdb\Search\SeriesTitleFactory', 'buildFromRequestStack' ]
         arguments:
             $requestStack: '@request_stack'
+    
+    App\Entity\Api\Tvdb\Search:
+        arguments:
+            $seriesTitle: '@App\Entity\Api\Tvdb\Search\SeriesTitle'
 
     App\Entity\Ingest\Criteria:
         factory: [ '@App\Entity\Ingest\CriteriaFactory', 'buildFromRequestStack' ]
+        arguments:
+            $requestStack: '@request_stack'
+
+    App\Entity\Ingest\MovieCriteria:
+        factory: [ '@App\Entity\Ingest\MovieCriteriaFactory', 'buildFromRequestStack' ]
         arguments:
             $requestStack: '@request_stack'
 

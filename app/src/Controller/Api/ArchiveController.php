@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Repository\ArchivedMovie;
 use App\Repository\ArchivedSeries;
 use App\Processor\Ingest;
 use App\Entity\Ingest\Criteria;
+use App\Document\Movie;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,8 +23,12 @@ class ArchiveController extends AbstractController
         $archivedSeriesRepository = new ArchivedSeries($documentManager);
         $archivedSeries = $archivedSeriesRepository->getAllArchivedSeries();
         
+        $archivedMovieRepository = new ArchivedMovie($documentManager);
+        $archivedMovies = $archivedMovieRepository->getAllArchivedMovies();
+        
         return $this->json([
-            'archivedSeries' => $archivedSeries
+            'archivedSeries' => $archivedSeries,
+            'archivedMovies' => $archivedMovies
         ]);
     }
 
@@ -77,6 +83,65 @@ class ArchiveController extends AbstractController
             }
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Failed to delete series: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/api/archive/movies/{tvdbMovieId}/restore', name: 'restore_movie', methods: ['POST'])]
+    public function restoreMovie(string $tvdbMovieId, DocumentManager $documentManager): JsonResponse
+    {
+        try {
+            $archivedMovieRepository = new ArchivedMovie($documentManager);
+            
+            // Get the archived movie
+            $archivedMovieData = $archivedMovieRepository->getArchivedMovieByTvdbId($tvdbMovieId);
+            
+            if (!$archivedMovieData) {
+                return new JsonResponse(['error' => 'Movie not found in archive'], Response::HTTP_NOT_FOUND);
+            }
+            
+            // Create new Movie document from archived data
+            $movie = new Movie();
+            $movie->title = $archivedMovieData['title'];
+            $movie->tvdbMovieId = $archivedMovieData['tvdbMovieId'];
+            $movie->poster = $archivedMovieData['poster'];
+            $movie->universe = $archivedMovieData['universe'] ?? '';
+            $movie->platform = $archivedMovieData['platform'] ?? 'Unknown';
+            $movie->description = $archivedMovieData['description'] ?? '';
+            $movie->status = 'Released';
+            $movie->watched = false; // Always restore as unwatched
+            $movie->watchedAt = null;
+            $movie->addedAt = new \DateTimeImmutable();
+            $movie->lastChecked = new \DateTimeImmutable();
+            
+            $documentManager->persist($movie);
+            $documentManager->flush();
+            
+            // Remove from archive
+            $archivedMovieRepository->removeArchivedMovie($tvdbMovieId);
+            
+            return new JsonResponse(['message' => 'Movie restored successfully'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to restore movie: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    #[Route('/api/archive/movies/{tvdbMovieId}', name: 'permanently_delete_movie', methods: ['DELETE'])]
+    public function permanentlyDeleteMovie(string $tvdbMovieId, DocumentManager $documentManager): JsonResponse
+    {
+        try {
+            $archivedMovieRepository = new ArchivedMovie($documentManager);
+            
+            $archivedMovie = $archivedMovieRepository->getArchivedMovieByTvdbId($tvdbMovieId);
+            
+            if (!$archivedMovie) {
+                return new JsonResponse(['error' => 'Movie not found in archive'], Response::HTTP_NOT_FOUND);
+            }
+            
+            $archivedMovieRepository->removeArchivedMovie($tvdbMovieId);
+            
+            return new JsonResponse(['message' => 'Movie permanently deleted'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to delete movie: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
