@@ -50,7 +50,6 @@ class MovieIngest
         $movieDocument->description = $movie->overview;
         $movieDocument->status = EpisodeDocument::VALID_STATUSES[$movie->status] ?? 'upcoming';
         $movieDocument->platform = $criteria->platform;
-        $movieDocument->universe = $criteria->universe;
         $movieDocument->lastChecked = new DateTimeImmutable();
         $movieDocument->runtime = $movie->runtime;
         

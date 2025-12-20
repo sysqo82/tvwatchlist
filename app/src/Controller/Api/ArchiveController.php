@@ -104,7 +104,6 @@ class ArchiveController extends AbstractController
             $movie->title = $archivedMovieData['title'];
             $movie->tvdbMovieId = $archivedMovieData['tvdbMovieId'];
             $movie->poster = $archivedMovieData['poster'];
-            $movie->universe = $archivedMovieData['universe'] ?? '';
             $movie->platform = $archivedMovieData['platform'] ?? 'Unknown';
             $movie->description = $archivedMovieData['description'] ?? '';
             $movie->status = 'Released';

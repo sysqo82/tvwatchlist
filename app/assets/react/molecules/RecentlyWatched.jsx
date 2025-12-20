@@ -131,7 +131,7 @@ export default function RecentlyWatched({refreshTrigger, onRefresh}) {
                                         <span className="text-success ms-2">✓ Watched on {new Date(movie.watchedAt).toLocaleDateString('en-GB')}</span>
                                     </div>
                                 </div>
-                                <div className="d-flex gap-2">
+                                <div className="d-flex flex-column gap-2">
                                     <button 
                                         className="btn btn-sm btn-warning"
                                         onClick={() => {

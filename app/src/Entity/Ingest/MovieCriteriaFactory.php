@@ -23,13 +23,12 @@ readonly class MovieCriteriaFactory
 
         return $this->build(
             $requestBody['movieId'],
-            $requestBody['platform'] ?? 'Plex',
-            strtolower($requestBody['universe'] ?? '')
+            $requestBody['platform'] ?? 'Plex'
         );
     }
 
-    public function build(string $movieId, string $platform, string $universe): MovieCriteria
+    public function build(string $movieId, string $platform): MovieCriteria
     {
-        return new MovieCriteria($movieId, $platform, $universe);
+        return new MovieCriteria($movieId, $platform);
     }
 }

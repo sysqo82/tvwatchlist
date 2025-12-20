@@ -216,9 +216,6 @@ export default function Archive() {
                                                 </small>
                                             </div>
                                             <div className="mb-2">
-                                                {movie.universe && (
-                                                    <span className="badge bg-info me-2">{movie.universe}</span>
-                                                )}
                                                 {movie.watched && (
                                                     <span className="badge bg-success me-2">Watched</span>
                                                 )}
@@ -286,10 +283,6 @@ export default function Archive() {
                                             <div className="mb-2">
                                                 {seriesNetworks[series.tvdbSeriesId] && (
                                                     <span className="badge bg-primary me-2">{seriesNetworks[series.tvdbSeriesId]}</span>
-                                                )}
-
-                                                {series.universe && (
-                                                    <span className="badge bg-info me-2">{series.universe}</span>
                                                 )}
                                             </div>
 

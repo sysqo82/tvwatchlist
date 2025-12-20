@@ -34,7 +34,6 @@ export default function WatchedButton({id, refreshState, size = "lg", className 
                     episode: episode.episode,
                     episodeId: episode.id.toString(),
                     airDate: episode.airDate,
-                    universe: episode.universe ?? null,
                     poster: episode.poster,
                     watchedAt: date
                 })

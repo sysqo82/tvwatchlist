@@ -55,8 +55,8 @@ export default function SeriesGroup({ seriesData, refreshState }) {
         setImageError(false);
     }, [poster]);
 
-    // Check if refresh is needed (missing poster, image error, or overview)
-    const needsRefresh = !poster || poster === '' || imageError || overview === "No synopsis available" || overview === "Loading synopsis...";
+    // Check if refresh is needed (missing poster, image error, fallback image, or overview)
+    const needsRefresh = !poster || poster === '' || imageError || poster === '/build/images/fallback-image.png' || overview === "No synopsis available" || overview === "Loading synopsis...";
 
     return (
         <div className="bento mb-3 series-group-main">

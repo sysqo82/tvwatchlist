@@ -27,7 +27,6 @@ class ArchivedMovie
                 'title' => $movie->title,
                 'tvdbMovieId' => $movie->tvdbMovieId,
                 'poster' => $movie->poster,
-                'universe' => $movie->universe,
                 'platform' => $movie->platform,
                 'description' => $movie->description,
                 'watched' => $movie->watched,
@@ -43,7 +42,6 @@ class ArchivedMovie
         $archivedMovie->title = $movie->title;
         $archivedMovie->tvdbMovieId = $movie->tvdbMovieId;
         $archivedMovie->poster = $movie->poster;
-        $archivedMovie->universe = $movie->universe ?? null;
         $archivedMovie->platform = $movie->platform ?? null;
         $archivedMovie->description = $movie->description ?? null;
         $archivedMovie->watched = $movie->watched;
@@ -81,7 +79,6 @@ class ArchivedMovie
             'title' => $archivedMovie->title,
             'tvdbMovieId' => $archivedMovie->tvdbMovieId,
             'poster' => $archivedMovie->poster,
-            'universe' => $archivedMovie->universe,
             'platform' => $archivedMovie->platform,
             'description' => $archivedMovie->description,
             'watched' => $archivedMovie->watched,

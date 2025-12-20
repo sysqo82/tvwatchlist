@@ -218,7 +218,7 @@ export default function UpNext() {
                                             ⏳ No episodes available yet. Last checked: {new Date(show.lastChecked).toLocaleDateString('en-GB')}
                                         </p>
                                         <p className="platform-info mb-0">
-                                            Platform: {show.platform || 'N/A'} {show.universe && `• Universe: ${show.universe}`}
+                                            Platform: {show.platform || 'N/A'}
                                         </p>
                                     </div>
                                     <div className="d-flex flex-column gap-2">

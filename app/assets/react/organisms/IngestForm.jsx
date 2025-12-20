@@ -9,7 +9,6 @@ export default function IngestForm({id, type = 'series'}) {
     const [tvdbNetwork, setTvdbNetwork ] = useState(null);
     const [networkLoading, setNetworkLoading ] = useState(true);
     const [platform, setPlatform] = useState('Plex');
-    const [universe, setUniverse] = useState('');
     
     const isMovie = type === 'movie';
 
@@ -45,8 +44,7 @@ export default function IngestForm({id, type = 'series'}) {
                 },
                 body: JSON.stringify({
                     movieId: id,
-                    platform: platform,
-                    universe: universe
+                    platform: platform
                 })
             })
             .then((response) => {
@@ -103,7 +101,7 @@ export default function IngestForm({id, type = 'series'}) {
             {isMovie && (
                 <div className="movie-metadata mb-3">
                     <div className="mb-2">
-                        <label htmlFor={id + "platform"} className="form-label text-light">Platform:</label>
+                        <label htmlFor={id + "platform"} className="form-label text-muted">Platform:</label>
                         <input 
                             name={id + "platform"} 
                             type="text" 
@@ -112,18 +110,6 @@ export default function IngestForm({id, type = 'series'}) {
                             className="form-control"
                             value={platform}
                             onChange={(e) => setPlatform(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-2">
-                        <label htmlFor={id + "universe"} className="form-label text-light">Universe (optional):</label>
-                        <input 
-                            name={id + "universe"} 
-                            type="text" 
-                            placeholder="e.g., mcu, dceu, star wars" 
-                            id="universe"
-                            className="form-control"
-                            value={universe}
-                            onChange={(e) => setUniverse(e.target.value)}
                         />
                     </div>
                 </div>

@@ -55,8 +55,8 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
         setImageError(false);
     }, [poster]);
 
-    // Check if refresh is needed (missing poster, image error, or overview)
-    const needsRefresh = !poster || poster === '' || imageError || overview === "No synopsis available" || overview === "Loading synopsis...";
+    // Check if refresh is needed (missing poster, image error, fallback image, or overview)
+    const needsRefresh = !poster || poster === '' || imageError || poster === '/build/images/fallback-image.png' || overview === "No synopsis available" || overview === "Loading synopsis...";
 
     return (
         <div className="bento mb-3 series-group-recently-watched">
@@ -97,6 +97,15 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
                             >
                                 {isExpanded ? 'Collapse' : 'Expand'} ({episodes.length} episodes)
                             </button>
+                            {needsRefresh && (
+                                <RefreshButton 
+                                    tvdbSeriesId={tvdbSeriesId}
+                                    refreshState={refreshState}
+                                    size="sm"
+                                    variant="outline-info"
+                                    className="w-100"
+                                />
+                            )}
                             <RemoveButton 
                                 id={tvdbSeriesId} 
                                 refreshState={refreshState}
