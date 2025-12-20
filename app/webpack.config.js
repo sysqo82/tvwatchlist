@@ -59,7 +59,20 @@ Encore
     })
 
     // enables Sass/SCSS support
-    .enableSassLoader()
+    .enableSassLoader((options) => {
+        options.api = 'modern';
+        options.sassOptions = {
+            silenceDeprecations: [
+                'legacy-js-api',
+                'import',
+                'global-builtin',
+                'color-functions'
+            ],
+            loadPaths: [
+                'node_modules'
+            ]
+        };
+    })
 
     // copy images to build directory
     .copyFiles({
