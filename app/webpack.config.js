@@ -1,4 +1,7 @@
 const Encore = require('@symfony/webpack-encore');
+const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
+const glob = require('glob-all');
+const path = require('path');
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -56,6 +59,15 @@ Encore
     .configureBabelPresetEnv((config) => {
         config.useBuiltIns = 'usage';
         config.corejs = '3.23';
+        // Target modern browsers to reduce polyfills
+        config.targets = {
+            browsers: [
+                'last 2 Chrome versions',
+                'last 2 Firefox versions',
+                'last 2 Safari versions',
+                'last 2 Edge versions'
+            ]
+        };
     })
 
     // enables Sass/SCSS support
@@ -94,4 +106,50 @@ Encore
     //.autoProvidejQuery()
 ;
 
-module.exports = Encore.getWebpackConfig();
+// Add PurgeCSS in production to remove unused CSS
+if (Encore.isProduction()) {
+    Encore.addPlugin(new PurgeCSSPlugin({
+        paths: glob.sync([
+            path.join(__dirname, 'templates/**/*.html.twig'),
+            path.join(__dirname, 'assets/**/*.jsx'),
+            path.join(__dirname, 'assets/**/*.js')
+        ]),
+        safelist: {
+            standard: [
+                /^modal/,
+                /^dropdown/,
+                /^collapse/,
+                /^show$/,
+                /^fade$/,
+                /^active$/,
+                /^disabled$/,
+                /^btn/,
+                /^badge/,
+                /^alert/,
+                /^progress/,
+                /^bento/,
+                /^series/,
+                /^movie/,
+                /^archive/
+            ],
+            deep: [/^bootstrap/],
+            greedy: []
+        }
+    }));
+}
+
+// Get webpack config and optimize
+const webpackConfig = Encore.getWebpackConfig();
+
+// Enable module concatenation (scope hoisting) for better tree shaking
+if (Encore.isProduction()) {
+    webpackConfig.optimization = {
+        ...webpackConfig.optimization,
+        usedExports: true,
+        sideEffects: true,
+        concatenateModules: true,
+        minimize: true
+    };
+}
+
+module.exports = webpackConfig;

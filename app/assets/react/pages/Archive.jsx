@@ -200,6 +200,7 @@ export default function Archive() {
                                         src={movie.poster} 
                                         alt={movie.title}
                                         className="img-fluid movie-poster"
+                                        loading="lazy"
                                         onError={(e) => {
                                             e.target.onerror = null;
                                             e.target.src = '/build/images/fallback-image.png';
@@ -261,6 +262,7 @@ export default function Archive() {
                                         src={series.poster} 
                                         alt={series.seriesTitle}
                                         className="img-fluid series-poster"
+                                        loading="lazy"
                                         onError={(e) => {
                                             e.target.onerror = null; // Prevent infinite loop
                                             e.target.src = '/build/images/fallback-image.png';

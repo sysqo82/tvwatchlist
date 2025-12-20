@@ -114,6 +114,7 @@ export default function RecentlyWatched({refreshTrigger, onRefresh}) {
                                 src={movie.poster || '/build/images/fallback-image.png'} 
                                 alt={movie.seriesTitle}
                                 className="series-poster"
+                                loading="lazy"
                                 onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = '/build/images/fallback-image.png';

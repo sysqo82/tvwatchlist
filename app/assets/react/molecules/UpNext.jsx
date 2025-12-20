@@ -208,7 +208,7 @@ export default function UpNext() {
                     <div key={show.id} className="bento show-no-episodes">
                         <div className="d-flex align-items-start gap-3">
                             <div className="flex-shrink-0">
-                                <img src={show.poster} alt={show.title} className="series-poster" />
+                                <img src={show.poster} alt={show.title} className="series-poster" loading="lazy" />
                             </div>
                             <div className="flex-grow-1">
                                 <div className="d-flex justify-content-between align-items-start mb-2">
@@ -252,6 +252,7 @@ export default function UpNext() {
                                     src={movie.poster} 
                                     alt={movie.title} 
                                     className="series-poster"
+                                    loading="lazy"
                                     onError={(e) => {
                                         e.target.onerror = null;
                                         e.target.src = '/build/images/fallback-image.png';

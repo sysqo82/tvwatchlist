@@ -68,6 +68,7 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
                         src={poster} 
                         alt={seriesTitle}
                         className="img-fluid series-poster"
+                        loading="lazy"
                         onError={(e) => {
                             e.target.onerror = null; // Prevent infinite loop
                             e.target.src = '/build/images/fallback-image.png';
