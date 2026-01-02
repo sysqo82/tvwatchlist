@@ -90,6 +90,7 @@ body{
     .Collapsible {
       background-color: white;
       float:left;
+      width:100%;
     }
 
     .Collapsible__contentInner {
@@ -144,10 +145,29 @@ body{
         width:55%;
       }
     }
+    .partialIngest{
+      width:100%;
+      float:left;
+      &::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+    }
+    .network-info{
+      width:100%;
+      float:left;
+      clear:both;
+    }
     .ingestForm{
       width:100%;
       float:left;
       margin-bottom:10px;
+      button{
+        width:100%;
+        clear:both;
+        float:left;
+      }
       .platformSelect{
         width:100%;
         float:left;

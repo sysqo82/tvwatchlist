@@ -115,7 +115,7 @@ export default function IngestForm({id, type = 'series'}) {
                 </div>
             )}
             {!isMovie && (
-                <div className="partialIngest">
+                <div className="partialIngest mb-3">
                     <div className="partialIngestInput">
                         <label htmlFor={id + "season"}>Season: </label>
                         <input name={id + "season"} type={"number"} placeholder={"1"} id={"season"} onChange={(e) => setIngestSeason(e.target.value)}></input>
@@ -128,12 +128,12 @@ export default function IngestForm({id, type = 'series'}) {
             )}
             {tvdbNetwork && !isMovie && (
                 <div className="network-info mb-3">
-                    <div className="badge bg-primary">
+                    <span className="badge bg-primary">
                         Original Network: {tvdbNetwork}
-                    </div>
+                    </span>
                 </div>
             )}
-            <button className={"btn btn-lg btn-block btn-dark " + ingestDisabled} type="button" onClick={() => ingestShow(id)}>
+            <button className={"btn btn-lg w-100 btn-dark " + ingestDisabled} type="button" onClick={() => ingestShow(id)}>
                 {ingestState}
             </button>
         </div>

@@ -96,7 +96,6 @@ class Episode
     #[Groups(['episode:read'])]
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
-    #[Assert\Url]
     public string $poster;
 
     #[Groups(['episode:read'])]

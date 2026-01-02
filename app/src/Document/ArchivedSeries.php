@@ -41,7 +41,6 @@ class ArchivedSeries
     #[Groups(['archived_series:read'])]
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
-    #[Assert\Url]
     public string $poster;
 
     #[Groups(['archived_series:read'])]

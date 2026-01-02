@@ -40,7 +40,6 @@ class ArchivedMovie
     #[Groups(['archived_movie:read'])]
     #[ODM\Field(type: 'string')]
     #[Assert\NotBlank]
-    #[Assert\Url]
     public string $poster;
 
     #[Groups(['archived_movie:read'])]

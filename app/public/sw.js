@@ -1,5 +1,5 @@
 // Service Worker for caching external images
-const CACHE_NAME = 'tvwatchlist-images-v1';
+const CACHE_NAME = 'tvwatchlist-images-v2';
 const IMAGE_CACHE_TIME = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 self.addEventListener('install', (event) => {
