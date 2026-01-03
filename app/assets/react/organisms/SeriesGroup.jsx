@@ -61,7 +61,7 @@ export default function SeriesGroup({ seriesData, refreshState }) {
     return (
         <div className="bento mb-3 series-group-main">
             {/* Series Header */}
-            <div className="d-flex align-items-start gap-3 mb-3">
+            <div className="d-flex align-items-start gap-2 mb-3">
                 {/* Series Poster */}
                 <div className="flex-shrink-0">
                     <img 
@@ -140,12 +140,33 @@ export default function SeriesGroup({ seriesData, refreshState }) {
                                     ? episode.description 
                                     : episode.title;
                                 
+                                // Calculate days until air date
+                                let airingBadge = null;
+                                if (episode.airDate) {
+                                    const airDate = new Date(episode.airDate);
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+                                    airDate.setHours(0, 0, 0, 0);
+                                    const daysUntilAir = Math.ceil((airDate - today) / (1000 * 60 * 60 * 24));
+                                    
+                                    if (daysUntilAir === 0) {
+                                        airingBadge = <span className="badge bg-danger">🔴 Airing Today!</span>;
+                                    } else if (daysUntilAir === 1) {
+                                        airingBadge = <span className="badge bg-warning text-dark">⏰ Airing Tomorrow</span>;
+                                    } else if (daysUntilAir > 1 && daysUntilAir <= 7) {
+                                        airingBadge = <span className="badge bg-info text-dark">📅 Airing in {daysUntilAir} days</span>;
+                                    }
+                                }
+                                
                                 return (
                                     <tr key={episode.id}>
                                         <td className="text-center fw-bold py-2">{episode.season}</td>
                                         <td className="text-center fw-bold py-2">{episode.episode}</td>
                                         <td className="py-2">
-                                            <div className="fw-bold text-light">{displayTitle}</div>
+                                            <div className="fw-bold text-light">
+                                                {displayTitle}
+                                            </div>
+                                            {airingBadge}
                                         </td>
                                         <td className="py-2">
                                             <WatchedButton 

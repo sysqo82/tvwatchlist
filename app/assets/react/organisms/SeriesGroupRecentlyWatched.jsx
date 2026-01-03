@@ -61,7 +61,7 @@ export default function SeriesGroupRecentlyWatched({ seriesData, refreshState })
     return (
         <div className="bento mb-3 series-group-recently-watched">
             {/* Series Header */}
-            <div className="d-flex align-items-start gap-3 mb-3">
+            <div className="d-flex align-items-start gap-2 mb-3">
                 {/* Series Poster */}
                 <div className="flex-shrink-0">
                     <img 

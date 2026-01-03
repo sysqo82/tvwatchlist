@@ -26,10 +26,20 @@ class ArchiveController extends AbstractController
         $archivedMovieRepository = new ArchivedMovie($documentManager);
         $archivedMovies = $archivedMovieRepository->getAllArchivedMovies();
         
-        return $this->json([
+        $response = $this->json([
             'archivedSeries' => $archivedSeries,
             'archivedMovies' => $archivedMovies
         ]);
+        
+        // Prevent caching to ensure fresh data is always served
+        $response->setPublic(false);
+        $response->setMaxAge(0);
+        $response->setSharedMaxAge(0);
+        $response->headers->addCacheControlDirective('no-cache', true);
+        $response->headers->addCacheControlDirective('no-store', true);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        
+        return $response;
     }
 
     #[Route('/api/archive/{tvdbSeriesId}/restore', name: 'restore_series', methods: ['POST'])]

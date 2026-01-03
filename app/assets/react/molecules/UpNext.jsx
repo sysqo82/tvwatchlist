@@ -244,33 +244,53 @@ export default function UpNext() {
                 ))
             }
             {movieData.length > 0 &&
-                movieData.map((movie) => (
-                    <div key={movie.id} className="bento mb-3 movie-item">
-                        <div className="d-flex align-items-start gap-3">
-                            <div className="flex-shrink-0">
-                                <img 
-                                    src={movie.poster} 
-                                    alt={movie.title} 
-                                    className="series-poster"
-                                    loading="lazy"
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = '/build/images/fallback-image.png';
-                                    }}
-                                />
-                            </div>
-                            <div className="flex-grow-1">
-                                <div className="d-flex justify-content-between align-items-start mb-2">
-                                    <div className="flex-grow-1">
-                                        <h3 className="mb-1 text-light">
-                                            {movie.title}
-                                        </h3>
-                                        <div className="mb-2">
-                                            <span className="badge bg-info">Movie</span>
-                                            {movie.platform && (
-                                                <span className="badge bg-primary ms-2">{movie.platform}</span>
-                                            )}
-                                        </div>
+                movieData.map((movie) => {
+                    // Calculate days until release date
+                    let releaseBadge = null;
+                    if (movie.releaseDate) {
+                        const releaseDate = new Date(movie.releaseDate);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        releaseDate.setHours(0, 0, 0, 0);
+                        const daysUntilRelease = Math.ceil((releaseDate - today) / (1000 * 60 * 60 * 24));
+                        
+                        if (daysUntilRelease === 0) {
+                            releaseBadge = <span className="badge bg-danger ms-2">🔴 Releasing Today!</span>;
+                        } else if (daysUntilRelease === 1) {
+                            releaseBadge = <span className="badge bg-warning text-dark ms-2">⏰ Releasing Tomorrow</span>;
+                        } else if (daysUntilRelease > 1 && daysUntilRelease <= 7) {
+                            releaseBadge = <span className="badge bg-info ms-2">📅 Releasing in {daysUntilRelease} days</span>;
+                        }
+                    }
+                    
+                    return (
+                        <div key={movie.id} className="bento mb-3 movie-item">
+                            <div className="d-flex align-items-start gap-3">
+                                <div className="flex-shrink-0">
+                                    <img 
+                                        src={movie.poster} 
+                                        alt={movie.title} 
+                                        className="series-poster"
+                                        loading="lazy"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = '/build/images/fallback-image.png';
+                                        }}
+                                    />
+                                </div>
+                                <div className="flex-grow-1">
+                                    <div className="d-flex justify-content-between align-items-start mb-2">
+                                        <div className="flex-grow-1">
+                                            <h3 className="mb-1 text-light">
+                                                {movie.title}
+                                                {releaseBadge}
+                                            </h3>
+                                            <div className="mb-2">
+                                                <span className="badge bg-info">Movie</span>
+                                                {movie.platform && (
+                                                    <span className="badge bg-primary ms-2">{movie.platform}</span>
+                                                )}
+                                            </div>
                                     </div>
                                     <div className="d-flex flex-column gap-2">
                                         <button 
@@ -294,8 +314,8 @@ export default function UpNext() {
                                 </p>
                             </div>
                         </div>
-                    </div>
-                ))
+                    </div>);
+                })
             }
             <RecentlyWatched 
                 refreshTrigger={refreshTrigger} 

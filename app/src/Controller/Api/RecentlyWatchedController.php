@@ -55,6 +55,16 @@ class RecentlyWatchedController extends AbstractController
             ];
         }, $recentHistory);
         
-        return $this->json($allWatched);
+        $response = $this->json($allWatched);
+        
+        // Prevent caching to ensure fresh data is always served
+        $response->setPublic(false);
+        $response->setMaxAge(0);
+        $response->setSharedMaxAge(0);
+        $response->headers->addCacheControlDirective('no-cache', true);
+        $response->headers->addCacheControlDirective('no-store', true);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        
+        return $response;
     }
 }

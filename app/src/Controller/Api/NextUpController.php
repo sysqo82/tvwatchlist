@@ -58,10 +58,20 @@ class NextUpController extends AbstractController
             ];
         }, $unwatchedMovies);
         
-        return $this->json([
+        $response = $this->json([
             'episodes' => $allUnwatchedEpisodes,
             'shows' => $shows,
             'movies' => $movies
         ]);
+        
+        // Prevent caching to ensure fresh data is always served
+        $response->setPublic(false);
+        $response->setMaxAge(0);
+        $response->setSharedMaxAge(0);
+        $response->headers->addCacheControlDirective('no-cache', true);
+        $response->headers->addCacheControlDirective('no-store', true);
+        $response->headers->addCacheControlDirective('must-revalidate', true);
+        
+        return $response;
     }
 }
