@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Document\ArchivedMovie;
+use App\Document\ArchivedSeries;
 use App\Document\History;
 use App\Document\Movie;
 use App\Repository\Episode;
@@ -22,19 +24,39 @@ class RecentlyWatchedController extends AbstractController
         $recentHistory = $historyRepository->findBy(
             [],
             ['watchedAt' => 'DESC'],
-            10
+            100
         );
         
-        // Convert history entries to array format
-        $allWatched = array_map(function($history) use ($documentManager) {
+        // Get all archived series tvdbSeriesIds to filter them out
+        $archivedSeriesRepository = $documentManager->getRepository(ArchivedSeries::class);
+        $archivedSeriesList = $archivedSeriesRepository->findAll();
+        $archivedSeriesIds = array_map(fn($archived) => $archived->tvdbSeriesId, $archivedSeriesList);
+        
+        // Get all archived movie tvdbMovieIds to filter them out
+        $archivedMovieRepository = $documentManager->getRepository(ArchivedMovie::class);
+        $archivedMoviesList = $archivedMovieRepository->findAll();
+        $archivedMovieIds = array_map(fn($archived) => $archived->tvdbMovieId, $archivedMoviesList);
+        
+        // Convert history entries to array format and filter out archived items
+        $allWatched = array_values(array_filter(array_map(function($history) use ($documentManager, $archivedSeriesIds, $archivedMovieIds) {
             $isMovie = $history->episodeTitle === 'Movie';
+            
+            // Skip if this is an archived series
+            if (!$isMovie && $history->tvdbSeriesId && in_array($history->tvdbSeriesId, $archivedSeriesIds)) {
+                return null;
+            }
+            
             $description = null;
             
-            // If it's a movie, fetch the description
+            // If it's a movie, fetch it and check if it's archived
             if ($isMovie && $history->movieId) {
                 $movieRepository = $documentManager->getRepository(Movie::class);
                 $movie = $movieRepository->find($history->movieId);
                 if ($movie) {
+                    // Skip if movie is archived by checking the ArchivedMovie collection
+                    if (in_array($movie->tvdbMovieId, $archivedMovieIds)) {
+                        return null;
+                    }
                     $description = $movie->description;
                 }
             }
@@ -53,7 +75,7 @@ class RecentlyWatchedController extends AbstractController
                 'description' => $description,
                 'movieId' => $history->movieId
             ];
-        }, $recentHistory);
+        }, $recentHistory)));
         
         $response = $this->json($allWatched);
         
