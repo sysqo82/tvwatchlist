@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./docker/php/Dockerfile.dev
     container_name: watchlist-app
-    restart: unless-stopped
+    restart: always
     environment:
       OPCACHE_VALIDATE_TIMESTAMPS: 0
       ENV: dev
@@ -23,7 +23,7 @@ services:
   nginx:
     container_name: tvwatchlist-nginx
     image: nginx:stable-alpine
-    restart: unless-stopped
+    restart: always
     ports:
       - '${APP_PORT}:80'
     volumes:
@@ -37,7 +37,7 @@ services:
   database:
     container_name: database
     image: mongo:7
-    restart: unless-stopped
+    restart: always
     environment:
       MONGO_INITDB_DATABASE: api
       MONGO_INITDB_ROOT_USERNAME: api
