@@ -60,10 +60,12 @@ class NextUpControllerTest extends TestCase
         
         $this->documentManager->expects('createQueryBuilder')->andReturn($queryBuilder);
         
-        $showRepo = Mockery::mock();
+        /** @var \Doctrine\ODM\MongoDB\Repository\DocumentRepository|\Mockery\MockInterface $showRepo */
+        $showRepo = Mockery::mock('\Doctrine\ODM\MongoDB\Repository\DocumentRepository');
         $showRepo->expects('findBy')->with(['hasEpisodes' => false])->andReturn([]);
         
-        $movieRepo = Mockery::mock();
+        /** @var \Doctrine\ODM\MongoDB\Repository\DocumentRepository|\Mockery\MockInterface $movieRepo */
+        $movieRepo = Mockery::mock('\Doctrine\ODM\MongoDB\Repository\DocumentRepository');
         $movieRepo->expects('findBy')->with(['watched' => false])->andReturn([]);
         
         $this->documentManager->expects('getRepository')->times(2)->andReturn($showRepo, $movieRepo);
@@ -86,9 +88,11 @@ class NextUpControllerTest extends TestCase
         $queryBuilder->allows('sort')->andReturnSelf();
         $queryBuilder->allows('getQuery')->andReturn($query);
         $this->documentManager->expects('createQueryBuilder')->andReturn($queryBuilder);
-        $showRepo = Mockery::mock();
+        /** @var \Doctrine\ODM\MongoDB\Repository\DocumentRepository|\Mockery\MockInterface $showRepo */
+        $showRepo = Mockery::mock('\Doctrine\ODM\MongoDB\Repository\DocumentRepository');
         $showRepo->expects('findBy')->andReturn([]);
-        $movieRepo = Mockery::mock();
+        /** @var \Doctrine\ODM\MongoDB\Repository\DocumentRepository|\Mockery\MockInterface $movieRepo */
+        $movieRepo = Mockery::mock('\Doctrine\ODM\MongoDB\Repository\DocumentRepository');
         $movieRepo->expects('findBy')->andReturn([]);
         $this->documentManager->expects('getRepository')->times(2)->andReturn($showRepo, $movieRepo);
         
@@ -110,9 +114,11 @@ class NextUpControllerTest extends TestCase
         $queryBuilder->allows('sort')->andReturnSelf();
         $queryBuilder->allows('getQuery')->andReturn($query);
         $this->documentManager->expects('createQueryBuilder')->andReturn($queryBuilder);
-        $showRepo = Mockery::mock();
+        /** @var \Doctrine\ODM\MongoDB\Repository\DocumentRepository|\Mockery\MockInterface $showRepo */
+        $showRepo = Mockery::mock('\Doctrine\ODM\MongoDB\Repository\DocumentRepository');
         $showRepo->expects('findBy')->andReturn([]);
-        $movieRepo = Mockery::mock();
+        /** @var \Doctrine\ODM\MongoDB\Repository\DocumentRepository|\Mockery\MockInterface $movieRepo */
+        $movieRepo = Mockery::mock('\Doctrine\ODM\MongoDB\Repository\DocumentRepository');
         $movieRepo->expects('findBy')->andReturn([]);
         $this->documentManager->expects('getRepository')->times(2)->andReturn($showRepo, $movieRepo);
         
@@ -134,9 +140,11 @@ class NextUpControllerTest extends TestCase
         $queryBuilder->allows('sort')->andReturnSelf();
         $queryBuilder->allows('getQuery')->andReturn($query);
         $this->documentManager->expects('createQueryBuilder')->andReturn($queryBuilder);
-        $showRepo = Mockery::mock();
+        /** @var \Doctrine\ODM\MongoDB\Repository\DocumentRepository|\Mockery\MockInterface $showRepo */
+        $showRepo = Mockery::mock('\Doctrine\ODM\MongoDB\Repository\DocumentRepository');
         $showRepo->expects('findBy')->andReturn([]);
-        $movieRepo = Mockery::mock();
+        /** @var \Doctrine\ODM\MongoDB\Repository\DocumentRepository|\Mockery\MockInterface $movieRepo */
+        $movieRepo = Mockery::mock('\Doctrine\ODM\MongoDB\Repository\DocumentRepository');
         $movieRepo->expects('findBy')->andReturn([]);
         $this->documentManager->expects('getRepository')->times(2)->andReturn($showRepo, $movieRepo);
         

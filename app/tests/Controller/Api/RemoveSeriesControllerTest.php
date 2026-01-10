@@ -30,7 +30,8 @@ class RemoveSeriesControllerTest extends TestCase
 
     public function testRemoveSeries()
     {
-        $archivedRepo = Mockery::mock();
+        /** @var \App\Repository\ArchivedSeries|\Mockery\MockInterface $archivedRepo */
+        $archivedRepo = Mockery::mock('\App\Repository\ArchivedSeries');
         $archivedRepo->allows('archiveSeriesByTvdbId')->with('tvdb series id');
         
         $query = Mockery::mock(Query::class);
