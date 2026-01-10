@@ -85,7 +85,7 @@ class IngestTest extends TestCase
             ->with(['tvdbEpisodeId' => '1'])
             ->andReturn(null);
 
-        $showRepository = Mockery::mock();
+        $showRepository = Mockery::mock(DocumentRepository::class);
         $showRepository->expects('findOneBy')->with(['tvdbSeriesId' => 'tvdbId'])->andReturn(null);
 
         $this->documentManager->expects('getRepository')
@@ -130,7 +130,7 @@ class IngestTest extends TestCase
             ->with(['tvdbEpisodeId' => '1'])
             ->andReturn($episodeDocument);
 
-        $showRepository = Mockery::mock();
+        $showRepository = Mockery::mock(DocumentRepository::class);
         $showRepository->expects('findOneBy')->with(['tvdbSeriesId' => 'tvdbId'])->andReturn(null);
 
         $this->documentManager->expects('getRepository')
