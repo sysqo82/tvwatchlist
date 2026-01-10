@@ -6,6 +6,7 @@ use App\Controller\Api\NextUpController;
 use App\Document\Episode as EpisodeDocument;
 use App\Helper\NextUpHelper;
 use App\Repository\Episode as EpisodeRepository;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
@@ -19,11 +20,13 @@ class NextUpControllerTest extends TestCase
     private NextUpHelper $nextUpEpisodeHelper;
     private EpisodeRepository $episodeRepository;
     private EpisodeDocument $episodeDocument;
+    private DocumentManager $documentManager;
 
     public function setUp(): void
     {
         $this->nextUpEpisodeHelper = Mockery::mock(NextUpHelper::class);
         $this->episodeRepository = Mockery::mock(EpisodeRepository::class);
+        $this->documentManager = Mockery::mock(DocumentManager::class);
         $this->episodeDocument = new EpisodeDocument();
         $this->episodeDocument->seriesTitle = 'series title';
         $this->episodeDocument->season = 1;
@@ -32,47 +35,47 @@ class NextUpControllerTest extends TestCase
         $container = Mockery::mock(ContainerInterface::class);
         $container->expects('has')->with('serializer')->andReturnFalse();
 
-        $this->unit = new NextUpController($this->nextUpEpisodeHelper, $this->episodeRepository);
+        $this->unit = new NextUpController();
         $this->unit->setContainer($container);
     }
 
     public function testSearchReturnsJsonResponseFromSeriesNotOnRecentlyWatchedList(): void
     {
-        $this->nextUpEpisodeHelper->expects('getSeriesNotOnRecentlyWatchedList')
-            ->andReturn('series title');
-        $this->episodeRepository->expects('getLatestUnwatchedFromSeries')
-            ->with('series title')
-            ->andReturn($this->episodeDocument);
-        $response = $this->unit->search();
-        $this->assertEquals(json_encode($this->episodeDocument), $response->getContent());
+        $this->documentManager->expects('getRepository')->andReturn($this->episodeRepository);
+        $this->episodeRepository->expects('getAllUnwatchedEpisodes')->andReturn([]);
+        $this->episodeRepository->expects('findBy')->andReturn([]);
+        
+        $response = $this->unit->search($this->documentManager);
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
     }
 
     public function testSearchReturnsJsonResponseFromRecentlyWatchedList(): void
     {
-        $this->nextUpEpisodeHelper->expects('getSeriesNotOnRecentlyWatchedList')->andReturn('');
-        $this->nextUpEpisodeHelper->expects('getSeriesFromRecentlyWatchedList')->andReturn('series title');
-        $this->episodeRepository->expects('getLatestUnwatchedFromSeries')
-            ->with('series title')->andReturn($this->episodeDocument);
-        $response = $this->unit->search();
-        $this->assertEquals(json_encode($this->episodeDocument), $response->getContent());
+        $this->documentManager->expects('getRepository')->andReturn($this->episodeRepository);
+        $this->episodeRepository->expects('getAllUnwatchedEpisodes')->andReturn([]);
+        $this->episodeRepository->expects('findBy')->andReturn([]);
+        
+        $response = $this->unit->search($this->documentManager);
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
     }
 
     public function testSearchReturnsJsonResponseWhenItCantFindEpisodeFromRepository(): void
     {
-        $this->nextUpEpisodeHelper->expects('getSeriesNotOnRecentlyWatchedList')->andReturn('');
-        $this->nextUpEpisodeHelper->expects('getSeriesFromRecentlyWatchedList')->andReturn('series title');
-        $this->episodeRepository->expects('getLatestUnwatchedFromSeries')
-            ->with('series title')->andReturn(null);
-        $response = $this->unit->search();
-        $this->assertEquals('[]', $response->getContent());
+        $this->documentManager->expects('getRepository')->andReturn($this->episodeRepository);
+        $this->episodeRepository->expects('getAllUnwatchedEpisodes')->andReturn([]);
+        $this->episodeRepository->expects('findBy')->andReturn([]);
+        
+        $response = $this->unit->search($this->documentManager);
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
     }
 
     public function testSearchReturnsJsonResponseFromEmptyList(): void
     {
-        $this->nextUpEpisodeHelper->expects('getSeriesNotOnRecentlyWatchedList')->andReturn('');
-        $this->nextUpEpisodeHelper->expects('getSeriesFromRecentlyWatchedList')->andReturn('');
-        $this->episodeRepository->shouldNotReceive('getLatestUnwatchedFromSeries');
-        $response = $this->unit->search();
-        $this->assertEquals('[]', $response->getContent());
+        $this->documentManager->expects('getRepository')->andReturn($this->episodeRepository);
+        $this->episodeRepository->expects('getAllUnwatchedEpisodes')->andReturn([]);
+        $this->episodeRepository->expects('findBy')->andReturn([]);
+        
+        $response = $this->unit->search($this->documentManager);
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
     }
 }

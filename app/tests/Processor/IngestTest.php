@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class IngestTest extends TestCase
@@ -22,16 +23,21 @@ class IngestTest extends TestCase
     private Ingest $unit;
     private DocumentManager $documentManager;
     private TvdbSeriesDataProvider $seriesDataProvider;
+    private LoggerInterface $logger;
 
     public function setUp(): void
     {
         $this->documentManager = Mockery::mock(DocumentManager::class);
-
         $this->seriesDataProvider = Mockery::mock(TvdbSeriesDataProvider::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->logger->allows('info')->withAnyArgs();
+        $this->logger->allows('debug')->withAnyArgs();
+        $this->logger->allows('error')->withAnyArgs();
 
         $this->unit = new Ingest(
             $this->documentManager,
-            $this->seriesDataProvider
+            $this->seriesDataProvider,
+            $this->logger
         );
     }
 

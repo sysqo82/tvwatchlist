@@ -9,6 +9,7 @@ use App\Processor\TvdbEpisodeData;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class TvdbSeriesDataProviderTest extends TestCase
@@ -35,10 +36,12 @@ class TvdbSeriesDataProviderTest extends TestCase
             ->andReturn($this->seasonResponse)
             ->byDefault();
 
-        $this->episodeDataProcessor = new TvdbEpisodeData();
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger->allows('info')->withAnyArgs();
+        $logger->allows('debug')->withAnyArgs();
+        $this->episodeDataProcessor = new TvdbEpisodeData($logger);
 
-
-        $this->unit = new TvdbSeriesDataProvider($this->client, $this->episodeDataProcessor);
+        $this->unit = new TvdbSeriesDataProvider($this->client, $this->episodeDataProcessor, $logger);
     }
 
     public function testGetSeriesReturnsNullWhenStatusNotSuccess(): void
