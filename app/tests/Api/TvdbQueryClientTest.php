@@ -17,8 +17,10 @@ class TvdbQueryClientTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private TvdbQueryClient $unit;
-    private HttpClientInterface $client;
-    private TvdbTokenProvider $tokenProvider;
+    /** @var HttpClientInterface|\Mockery\MockInterface */
+    private $client;
+    /** @var TvdbTokenProvider|\Mockery\MockInterface */
+    private $tokenProvider;
 
     public function setUp(): void
     {
@@ -126,5 +128,124 @@ class TvdbQueryClientTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Error while getting extended season data');
         $this->unit->seasonExtended('seasonId');
+    }
+
+    public function testSearchMovies(): void
+    {
+        $this->tokenProvider->expects('getToken')
+            ->andReturns('token');
+
+        $this->client->expects('request')
+            ->with(
+                'GET',
+                'https://api4.thetvdb.com/v4/search',
+                [
+                    'query' => [
+                        'query' => 'movie title',
+                        'type' => 'movie'
+                    ],
+                    'headers' => [
+                        'Authorization' => 'Bearer token'
+                    ]
+                ]
+            );
+
+        $this->unit->searchMovies('movie title');
+    }
+
+    public function testSearchMoviesThrowsExceptionOnTransportException(): void
+    {
+        $this->tokenProvider->expects('getToken')
+            ->andReturns('token');
+
+        $this->client->expects('request')
+            ->andThrows($this->createMock(TransportExceptionInterface::class));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Error while searching for movies');
+        $this->unit->searchMovies('movie title');
+    }
+
+    public function testMovieExtended(): void
+    {
+        $this->tokenProvider->expects('getToken')
+            ->andReturns('token');
+
+        $this->client->expects('request')
+            ->with(
+                'GET',
+                'https://api4.thetvdb.com/v4/movies/movieId/extended?meta=translations',
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer token'
+                    ]
+                ]
+            );
+
+        $this->unit->movieExtended('movieId');
+    }
+
+    public function testMovieExtendedThrowsExceptionOnTransportException(): void
+    {
+        $this->tokenProvider->expects('getToken')
+            ->andReturns('token');
+
+        $this->client->expects('request')
+            ->andThrows($this->createMock(TransportExceptionInterface::class));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Error while getting extended movie data');
+        $this->unit->movieExtended('movieId');
+    }
+
+    public function testMovieTranslations(): void
+    {
+        $this->tokenProvider->expects('getToken')
+            ->andReturns('token');
+
+        $this->client->expects('request')
+            ->with(
+                'GET',
+                'https://api4.thetvdb.com/v4/movies/movieId/translations/eng',
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer token'
+                    ]
+                ]
+            );
+
+        $this->unit->movieTranslations('movieId', 'eng');
+    }
+
+    public function testMovieTranslationsWithDefaultLanguage(): void
+    {
+        $this->tokenProvider->expects('getToken')
+            ->andReturns('token');
+
+        $this->client->expects('request')
+            ->with(
+                'GET',
+                'https://api4.thetvdb.com/v4/movies/movieId/translations/eng',
+                [
+                    'headers' => [
+                        'Authorization' => 'Bearer token'
+                    ]
+                ]
+            );
+
+        $this->unit->movieTranslations('movieId');
+    }
+
+    public function testMovieTranslationsThrowsExceptionOnTransportException(): void
+    {
+        $this->tokenProvider->expects('getToken')
+            ->andReturns('token');
+
+        $this->client->expects('request')
+            ->andThrows($this->createMock(TransportExceptionInterface::class));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Error while getting movie translations');
+        $this->unit->movieTranslations('movieId');
     }
 }

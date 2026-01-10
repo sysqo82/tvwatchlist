@@ -20,8 +20,10 @@ class SeriesTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private Series $unit;
-    private DocumentManager $documentManager;
-    private Builder $aggregationBuilder;
+    /** @var DocumentManager|\Mockery\MockInterface */
+    private $documentManager;
+    /** @var Builder|\Mockery\MockInterface */
+    private $aggregationBuilder;
 
     public function setUp(): void
     {

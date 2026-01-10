@@ -21,9 +21,12 @@ class IngestTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private Ingest $unit;
-    private DocumentManager $documentManager;
-    private TvdbSeriesDataProvider $seriesDataProvider;
-    private LoggerInterface $logger;
+    /** @var DocumentManager|\Mockery\MockInterface */
+    private $documentManager;
+    /** @var TvdbSeriesDataProvider|\Mockery\MockInterface */
+    private $seriesDataProvider;
+    /** @var LoggerInterface|\Mockery\MockInterface */
+    private $logger;
 
     public function setUp(): void
     {

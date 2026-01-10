@@ -17,11 +17,15 @@ class TvdbSeriesDataProviderTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private TvdbSeriesDataProvider $unit;
-    private TvdbQueryClient $client;
+    /** @var TvdbQueryClient|\Mockery\MockInterface */
+    private $client;
     private TvdbEpisodeData $episodeDataProcessor;
-    private ResponseInterface $seriesResponse;
-    private ResponseInterface $seasonResponse;
-    private LoggerInterface $logger;
+    /** @var ResponseInterface|\Mockery\MockInterface */
+    private $seriesResponse;
+    /** @var ResponseInterface|\Mockery\MockInterface */
+    private $seasonResponse;
+    /** @var LoggerInterface|\Mockery\MockInterface */
+    private $logger;
 
     public function setUp(): void
     {

@@ -17,9 +17,9 @@ class RemoveSeriesControllerTest extends TestCase
 
     private RemoveSeriesController $unit;
     /** @var EpisodeRepository|\Mockery\MockInterface */
-    private EpisodeRepository $episodeRepository;
+    private $episodeRepository;
     /** @var DocumentManager|\Mockery\MockInterface */
-    private DocumentManager $documentManager;
+    private $documentManager;
 
     public function setUp(): void
     {

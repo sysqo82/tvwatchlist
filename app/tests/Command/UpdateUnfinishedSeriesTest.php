@@ -18,9 +18,12 @@ class UpdateUnfinishedSeriesTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private UpdateUnfinishedSeries $unit;
-    private EpisodeRepository $episodeRepository;
-    private SeriesRepository $seriesRepository;
-    private Ingest $ingestProcess;
+    /** @var EpisodeRepository|\Mockery\MockInterface */
+    private $episodeRepository;
+    /** @var SeriesRepository|\Mockery\MockInterface */
+    private $seriesRepository;
+    /** @var Ingest|\Mockery\MockInterface */
+    private $ingestProcess;
 
     public function setUp(): void
     {

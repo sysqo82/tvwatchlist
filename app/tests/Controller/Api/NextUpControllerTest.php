@@ -21,12 +21,12 @@ class NextUpControllerTest extends TestCase
 
     private NextUpController $unit;
     /** @var NextUpHelper|\Mockery\MockInterface */
-    private NextUpHelper $nextUpEpisodeHelper;
+    private $nextUpEpisodeHelper;
     /** @var EpisodeRepository|\Mockery\MockInterface */
-    private EpisodeRepository $episodeRepository;
+    private $episodeRepository;
     private EpisodeDocument $episodeDocument;
     /** @var DocumentManager|\Mockery\MockInterface */
-    private DocumentManager $documentManager;
+    private $documentManager;
 
     public function setUp(): void
     {
