@@ -28,7 +28,8 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress",
-        "webpack": "encore dev --progress"
+        "webpack": "encore dev --progress",
+        "clear-cache": "cd app && docker-compose run --rm app"
     },
     "dependencies": {
         "moment": "^2.29.4",
