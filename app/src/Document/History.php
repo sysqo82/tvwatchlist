@@ -36,7 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class History
 {
-    #[ODM\Id(type: 'integer', strategy: 'INCREMENT')]
+    #[ODM\Id(type: 'int', strategy: 'INCREMENT')]
     private int $id;
 
     public function getId(): int
@@ -63,11 +63,11 @@ class History
     public ?string $episodeDescription = null;
 
     #[Groups(['history:read','history:write'])]
-    #[ODM\Field(type: 'integer', nullable: true)]
+    #[ODM\Field(type: 'int', nullable: true)]
     public ?int $season = null;
 
     #[Groups(['history:read','history:write'])]
-    #[ODM\Field(type: 'integer', nullable: true)]
+    #[ODM\Field(type: 'int', nullable: true)]
     public ?int $episode = null;
 
     #[Groups(['history:read','history:write'])]
