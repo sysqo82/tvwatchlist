@@ -20,9 +20,12 @@ class NextUpControllerTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private NextUpController $unit;
+    /** @var NextUpHelper|\Mockery\MockInterface */
     private NextUpHelper $nextUpEpisodeHelper;
+    /** @var EpisodeRepository|\Mockery\MockInterface */
     private EpisodeRepository $episodeRepository;
     private EpisodeDocument $episodeDocument;
+    /** @var DocumentManager|\Mockery\MockInterface */
     private DocumentManager $documentManager;
 
     public function setUp(): void

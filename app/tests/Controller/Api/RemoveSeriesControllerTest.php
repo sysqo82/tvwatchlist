@@ -16,7 +16,9 @@ class RemoveSeriesControllerTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private RemoveSeriesController $unit;
+    /** @var EpisodeRepository|\Mockery\MockInterface */
     private EpisodeRepository $episodeRepository;
+    /** @var DocumentManager|\Mockery\MockInterface */
     private DocumentManager $documentManager;
 
     public function setUp(): void
