@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace App\Swagger;
 
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Yaml\Parser;
 
 class SwaggerDecorator implements NormalizerInterface
 {
-    use ContainerAwareTrait;
-
     public function __construct(
         private readonly NormalizerInterface $defaultDecorator,
         private readonly string $configLocation,
-        private readonly Parser $parser
+        private readonly Parser $parser,
+        private readonly ParameterBagInterface $params
     ) {
     }
 
@@ -109,7 +108,7 @@ class SwaggerDecorator implements NormalizerInterface
             preg_match_all('/%([\w()-\.]+)%/', $value, $tokens);
 
             foreach ($tokens[1] ?? [] as $token) {
-                $value = str_replace('%' . $token . '%', $this->container->getParameter($token), $value);
+                $value = str_replace('%' . $token . '%', $this->params->get($token), $value);
             }
         }
 

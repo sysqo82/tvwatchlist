@@ -53,8 +53,6 @@ services:
               '%kernel.project_dir%/config/services/swagger.yaml',
           ]
         autoconfigure: false
-        calls:
-            - setContainer: [ '@service_container' ]
 
     Symfony\Component\Yaml\Parser: ~
 

@@ -9,6 +9,7 @@ use ArrayObject;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Yaml\Parser;
 
@@ -25,10 +26,14 @@ class SwaggerDecoratorTest extends TestCase
 
     /** @var NormalizerInterface|\Mockery\MockInterface */
     private $defaultDecorator;
+    
+    /** @var ParameterBagInterface|\Mockery\MockInterface */
+    private $params;
 
     public function setUp(): void
     {
         $this->defaultDecorator = Mockery::mock(NormalizerInterface::class);
+        $this->params = Mockery::mock(ParameterBagInterface::class);
     }
 
     public function testNormalizeMergeConfigIntoDoc(): void
@@ -36,7 +41,8 @@ class SwaggerDecoratorTest extends TestCase
         $swaggerDecorator = new SwaggerDecorator(
             $this->defaultDecorator,
             self::CONFIG_FILE_PATH . 'swagger.yaml',
-            new Parser()
+            new Parser(),
+            $this->params
         );
 
         $object = ['some' => 'data'];
@@ -55,7 +61,8 @@ class SwaggerDecoratorTest extends TestCase
         $swaggerDecorator = new SwaggerDecorator(
             $this->defaultDecorator,
             self::CONFIG_FILE_PATH . 'wildcard.yaml',
-            new Parser()
+            new Parser(),
+            $this->params
         );
 
         $object = ['some' => 'data'];
@@ -82,7 +89,8 @@ class SwaggerDecoratorTest extends TestCase
         $swaggerDecorator = new SwaggerDecorator(
             $this->defaultDecorator,
             self::CONFIG_FILE_PATH . 'empty.yaml',
-            new Parser()
+            new Parser(),
+            $this->params
         );
 
         $object = ['some' => 'data'];
@@ -99,7 +107,8 @@ class SwaggerDecoratorTest extends TestCase
         $swaggerDecorator = new SwaggerDecorator(
             $this->defaultDecorator,
             self::CONFIG_FILE_PATH . 'new-endpoint.yaml',
-            new Parser()
+            new Parser(),
+            $this->params
         );
 
         $object = ['some' => 'data'];
@@ -129,7 +138,8 @@ class SwaggerDecoratorTest extends TestCase
         $swaggerDecorator = new SwaggerDecorator(
             $this->defaultDecorator,
             self::CONFIG_FILE_PATH . 'new-endpoint.yaml',
-            new Parser()
+            new Parser(),
+            $this->params
         );
 
         $object = ['some' => 'data'];
@@ -151,7 +161,8 @@ class SwaggerDecoratorTest extends TestCase
         $swaggerDecorator = new SwaggerDecorator(
             $this->defaultDecorator,
             self::CONFIG_FILE_PATH . 'new-endpoint.yaml',
-            new Parser()
+            new Parser(),
+            $this->params
         );
 
         $object = ['some' => 'data'];
@@ -173,7 +184,8 @@ class SwaggerDecoratorTest extends TestCase
         $swaggerDecorator = new SwaggerDecorator(
             $this->defaultDecorator,
             self::CONFIG_FILE_PATH . 'swagger.yaml',
-            new Parser()
+            new Parser(),
+            $this->params
         );
         $data = ['some' => 'data'];
         $format = 'format';
