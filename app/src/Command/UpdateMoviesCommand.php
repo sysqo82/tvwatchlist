@@ -32,30 +32,30 @@ class UpdateMoviesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Starting movie update...');
-        
+
         $movieRepository = $this->documentManager->getRepository(Movie::class);
         $movies = $movieRepository->findAll();
-        
+
         $output->writeln(sprintf('Found %d movies to update', count($movies)));
-        
+
         foreach ($movies as $movie) {
             $output->writeln(sprintf('Updating movie: %s (ID: %s)', $movie->title, $movie->tvdbMovieId));
-            
+
             try {
                 $movieData = $this->tvdbMovieDataProvider->getMovie($movie->tvdbMovieId);
-                
+
                 if ($movieData === null) {
                     $output->writeln(sprintf('  ⚠ Movie not found on TVDB: %s', $movie->tvdbMovieId));
                     continue;
                 }
-                
+
                 // Update movie fields
                 $movie->title = $movieData->title;
                 $movie->poster = $movieData->getPoster();
                 $movie->description = $movieData->overview;
                 $movie->runtime = $movieData->runtime;
                 $movie->lastChecked = new \DateTimeImmutable();
-                
+
                 if ($movieData->releaseDate) {
                     try {
                         $movie->releaseDate = new \DateTimeImmutable($movieData->releaseDate);
@@ -63,10 +63,9 @@ class UpdateMoviesCommand extends Command
                         $this->logger->warning("Invalid release date for movie {$movie->tvdbMovieId}: {$movieData->releaseDate}");
                     }
                 }
-                
+
                 $this->documentManager->flush();
                 $output->writeln(sprintf('  ✓ Updated: %s', $movie->title));
-                
             } catch (\Exception $e) {
                 $output->writeln(sprintf('  ✗ Error updating movie %s: %s', $movie->title, $e->getMessage()));
                 $this->logger->error('Error updating movie', [
@@ -75,7 +74,7 @@ class UpdateMoviesCommand extends Command
                 ]);
             }
         }
-        
+
         $output->writeln('Movie update complete!');
         return Command::SUCCESS;
     }

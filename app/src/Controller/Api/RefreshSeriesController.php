@@ -25,16 +25,16 @@ class RefreshSeriesController extends AbstractController
         try {
             // Get the updated series data from TVDB
             $series = $this->tvdbSeriesDataProvider->getSeries($tvdbSeriesId);
-            
+
             if ($series === null) {
                 return new JsonResponse(['error' => 'Series not found on TVDB'], Response::HTTP_NOT_FOUND);
             }
 
             $episodeRepository = $documentManager->getRepository(Episode::class);
-            
+
             // Update all episodes for this series with the new poster
             $episodes = $episodeRepository->findBy(['tvdbSeriesId' => $tvdbSeriesId]);
-            
+
             if (empty($episodes)) {
                 return new JsonResponse(['error' => 'No episodes found for this series'], Response::HTTP_NOT_FOUND);
             }
@@ -46,7 +46,7 @@ class RefreshSeriesController extends AbstractController
                 $documentManager->persist($episode);
                 $updatedCount++;
             }
-            
+
             $documentManager->flush();
 
             return new JsonResponse([

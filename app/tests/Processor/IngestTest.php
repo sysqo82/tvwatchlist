@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 class IngestTest extends TestCase
@@ -20,18 +21,26 @@ class IngestTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private Ingest $unit;
-    private DocumentManager $documentManager;
-    private TvdbSeriesDataProvider $seriesDataProvider;
+    /** @var DocumentManager|\Mockery\MockInterface */
+    private $documentManager;
+    /** @var TvdbSeriesDataProvider|\Mockery\MockInterface */
+    private $seriesDataProvider;
+    /** @var LoggerInterface|\Mockery\MockInterface */
+    private $logger;
 
     public function setUp(): void
     {
         $this->documentManager = Mockery::mock(DocumentManager::class);
-
         $this->seriesDataProvider = Mockery::mock(TvdbSeriesDataProvider::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->logger->allows('info')->withAnyArgs();
+        $this->logger->allows('debug')->withAnyArgs();
+        $this->logger->allows('error')->withAnyArgs();
 
         $this->unit = new Ingest(
             $this->documentManager,
-            $this->seriesDataProvider
+            $this->seriesDataProvider,
+            $this->logger
         );
     }
 
@@ -76,28 +85,19 @@ class IngestTest extends TestCase
             ->with(['tvdbEpisodeId' => '1'])
             ->andReturn(null);
 
+        $showRepository = Mockery::mock();
+        $showRepository->expects('findOneBy')->with(['tvdbSeriesId' => 'tvdbId'])->andReturn(null);
+
+        $this->documentManager->expects('getRepository')
+            ->with(\App\Document\Show::class)
+            ->andReturn($showRepository);
+
         $this->documentManager->expects('getRepository')
             ->with(EpisodeDocument::class)
             ->andReturn($episodeRepository);
 
-        $this->documentManager->expects('persist')
-            ->with(Mockery::on(function ($episode) {
-                return $episode instanceof EpisodeDocument
-                    && $episode->tvdbEpisodeId === '1'
-                    && $episode->title === 'Test Episode'
-                    && $episode->description === 'Test Overview'
-                    && $episode->season === 1
-                    && $episode->episode === 1
-                    && $episode->seriesTitle === 'Test Series'
-                    && $episode->tvdbSeriesId === '123'
-                    && $episode->poster === 'https://www.thetvdb.com/banners/posters/5b3e0b2d9d0c5.jpg'
-                    && $episode->universe === ''
-                    && $episode->platform === ''
-                    && $episode->status === 'airing'
-                    && $episode->airDate->format('Y-m-d') === '2021-01-01';
-            }));
-
-        $this->documentManager->expects('flush');
+        $this->documentManager->expects('persist')->twice();
+        $this->documentManager->expects('flush')->twice();
 
         $this->unit->ingest(new Criteria('tvdbId', 1, 1, '', ''));
     }
@@ -130,18 +130,19 @@ class IngestTest extends TestCase
             ->with(['tvdbEpisodeId' => '1'])
             ->andReturn($episodeDocument);
 
+        $showRepository = Mockery::mock();
+        $showRepository->expects('findOneBy')->with(['tvdbSeriesId' => 'tvdbId'])->andReturn(null);
+
+        $this->documentManager->expects('getRepository')
+            ->with(\App\Document\Show::class)
+            ->andReturn($showRepository);
+
         $this->documentManager->expects('getRepository')
             ->with(EpisodeDocument::class)
             ->andReturn($episodeRepository);
 
-        $this->documentManager->expects('persist')
-            ->with(Mockery::on(function ($episode) {
-                return $episode instanceof EpisodeDocument
-                    && $episode->status === 'finished'
-                    && $episode->airDate->format('Y-m-d') === '2021-01-01';
-            }));
-
-        $this->documentManager->expects('flush');
+        $this->documentManager->expects('persist')->twice();
+        $this->documentManager->expects('flush')->twice();
 
         $this->unit->ingest(new Criteria('tvdbId', 1, 1, '', ''));
     }

@@ -29,24 +29,25 @@ class Ingest extends AbstractController
             $result = $this->ingestProcess->ingest(
                 $this->criteria
             );
-            
-            if ($result['episodeCount'] === 0) {
+
+            $episodeCount = $result['episodeCount'] ?? 0;
+            if ($episodeCount === 0) {
                 return new JsonResponse([
                     'message' => sprintf(
                         'Show "%s" was added but has no episodes available in TVDB yet. We will automatically check for updates weekly.',
-                        $result['seriesTitle']
+                        $result['seriesTitle'] ?? 'Unknown'
                     ),
                     'status' => 202,
                     'title' => 'Show Added (No Episodes)',
                     'hasEpisodes' => false
                 ]);
             }
-            
+
             return new JsonResponse([
                 'message' => sprintf(
                     'Processing completed for series: %s. Added %d episode(s) from Season: %d, Episode:%d',
-                    $result['seriesTitle'],
-                    $result['episodeCount'],
+                    $result['seriesTitle'] ?? '',
+                    $result['episodeCount'] ?? 0,
                     $this->criteria->season,
                     $this->criteria->episode
                 ),

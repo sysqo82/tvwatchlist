@@ -19,12 +19,12 @@ class NextUpController extends AbstractController
     {
         $episodeRepository = new Episode($documentManager);
         $allUnwatchedEpisodes = $episodeRepository->getAllUnwatchedEpisodes();
-        
+
         // Get shows without episodes
         $showRepository = $documentManager->getRepository(Show::class);
         $showsWithoutEpisodes = $showRepository->findBy(['hasEpisodes' => false]);
-        
-        $shows = array_map(function($show) {
+
+        $shows = array_map(function ($show) {
             return [
                 'id' => $show->id,
                 'tvdbSeriesId' => $show->tvdbSeriesId,
@@ -37,12 +37,12 @@ class NextUpController extends AbstractController
                 'lastChecked' => $show->lastChecked->format('Y-m-d H:i:s')
             ];
         }, $showsWithoutEpisodes);
-        
+
         // Get unwatched movies
         $movieRepository = $documentManager->getRepository(Movie::class);
         $unwatchedMovies = $movieRepository->findBy(['watched' => false]);
-        
-        $movies = array_map(function($movie) {
+
+        $movies = array_map(function ($movie) {
             return [
                 'id' => $movie->id,
                 'tvdbMovieId' => $movie->tvdbMovieId,
@@ -57,13 +57,13 @@ class NextUpController extends AbstractController
                 'type' => 'movie'
             ];
         }, $unwatchedMovies);
-        
+
         $response = $this->json([
             'episodes' => $allUnwatchedEpisodes,
             'shows' => $shows,
             'movies' => $movies
         ]);
-        
+
         // Prevent caching to ensure fresh data is always served
         $response->setPublic(false);
         $response->setMaxAge(0);
@@ -71,7 +71,7 @@ class NextUpController extends AbstractController
         $response->headers->addCacheControlDirective('no-cache', true);
         $response->headers->addCacheControlDirective('no-store', true);
         $response->headers->addCacheControlDirective('must-revalidate', true);
-        
+
         return $response;
     }
 }

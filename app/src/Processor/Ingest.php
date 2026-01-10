@@ -25,7 +25,7 @@ class Ingest
     public function ingest(Criteria $criteria): array
     {
         $this->logger->info("Starting ingestion for series ID: {$criteria->tvdbSeriesId}");
-        
+
         $series = $this->tvdbSeriesDataProvider->getSeries(
             $criteria->tvdbSeriesId,
             $criteria->season,
@@ -42,27 +42,27 @@ class Ingest
         // Save or update the show record
         $showRepository = $this->documentManager->getRepository(ShowDocument::class);
         $showDocument = $showRepository->findOneBy(['tvdbSeriesId' => $criteria->tvdbSeriesId]);
-        
+
         if (!$showDocument) {
             $showDocument = new ShowDocument();
             $showDocument->tvdbSeriesId = $criteria->tvdbSeriesId;
             $showDocument->addedAt = new DateTimeImmutable();
         }
-        
+
         $showDocument->title = $series->title;
         $showDocument->poster = $series->getPoster();
         $showDocument->status = EpisodeDocument::VALID_STATUSES[$series->status] ?? 'upcoming';
         $showDocument->platform = $criteria->platform;
         $showDocument->universe = $criteria->universe;
         $showDocument->lastChecked = new DateTimeImmutable();
-        
+
         $episodes = $series->getEpisodes();
         $episodeCount = count($episodes);
         $showDocument->hasEpisodes = $episodeCount > 0;
-        
+
         $this->documentManager->persist($showDocument);
         $this->documentManager->flush();
-        
+
         $this->logger->info("Ingesting series: {$series->title}, Found {$episodeCount} episodes");
 
         $episodeRepository = $this->documentManager->getRepository(EpisodeDocument::class);
@@ -91,9 +91,9 @@ class Ingest
 
             $this->documentManager->persist($episodeDocument);
         }
-        
+
         $this->documentManager->flush();
-        
+
         return [
             'seriesTitle' => $series->title,
             'episodeCount' => $episodeCount

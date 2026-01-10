@@ -9,6 +9,7 @@ use App\Processor\TvdbEpisodeData;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class TvdbSeriesDataProviderTest extends TestCase
@@ -16,10 +17,15 @@ class TvdbSeriesDataProviderTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private TvdbSeriesDataProvider $unit;
-    private TvdbQueryClient $client;
+    /** @var TvdbQueryClient|\Mockery\MockInterface */
+    private $client;
     private TvdbEpisodeData $episodeDataProcessor;
-    private ResponseInterface $seriesResponse;
-    private ResponseInterface $seasonResponse;
+    /** @var ResponseInterface|\Mockery\MockInterface */
+    private $seriesResponse;
+    /** @var ResponseInterface|\Mockery\MockInterface */
+    private $seasonResponse;
+    /** @var LoggerInterface|\Mockery\MockInterface */
+    private $logger;
 
     public function setUp(): void
     {
@@ -35,10 +41,12 @@ class TvdbSeriesDataProviderTest extends TestCase
             ->andReturn($this->seasonResponse)
             ->byDefault();
 
-        $this->episodeDataProcessor = new TvdbEpisodeData();
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->logger->allows('info')->withAnyArgs();
+        $this->logger->allows('debug')->withAnyArgs();
+        $this->episodeDataProcessor = new TvdbEpisodeData($this->logger);
 
-
-        $this->unit = new TvdbSeriesDataProvider($this->client, $this->episodeDataProcessor);
+        $this->unit = new TvdbSeriesDataProvider($this->client, $this->episodeDataProcessor, $this->logger);
     }
 
     public function testGetSeriesReturnsNullWhenStatusNotSuccess(): void
@@ -135,6 +143,8 @@ class TvdbSeriesDataProviderTest extends TestCase
         $this->seasonResponse->expects('getContent')->andReturn(json_encode([
             'status' => 'failure',
         ]));
+
+        $this->logger->expects('error')->withAnyArgs()->once();
 
         $this->assertNull($this->unit->getSeries('123'));
     }

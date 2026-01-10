@@ -18,8 +18,10 @@ class SearchTest extends TestCase
 
     private Search $unit;
     private SearchEntity $searchEntity;
-    private TvdbQueryClient $tvdbQueryClient;
-    private SeriesFactory $seriesFactory;
+    /** @var TvdbQueryClient|\Mockery\MockInterface */
+    private $tvdbQueryClient;
+    /** @var SeriesFactory|\Mockery\MockInterface */
+    private $seriesFactory;
 
 
     public function setUp(): void

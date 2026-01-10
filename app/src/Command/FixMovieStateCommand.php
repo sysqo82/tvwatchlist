@@ -31,22 +31,22 @@ class FixMovieStateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $tvdbMovieId = $input->getArgument('tvdbMovieId');
-        
+
         $movieRepository = $this->documentManager->getRepository(Movie::class);
         $movie = $movieRepository->findOneBy(['tvdbMovieId' => $tvdbMovieId]);
-        
+
         if (!$movie) {
             $output->writeln(sprintf('Movie with TVDB ID %s not found', $tvdbMovieId));
             return Command::FAILURE;
         }
-        
+
         $movie->watched = false;
         $movie->watchedAt = null;
-        
+
         $this->documentManager->flush();
-        
+
         $output->writeln(sprintf('Fixed movie: %s (set to unwatched)', $movie->title));
-        
+
         return Command::SUCCESS;
     }
 }

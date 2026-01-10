@@ -5,8 +5,10 @@ namespace App\Tests\Processor;
 use App\Entity\Tvdb\Episode;
 use App\Entity\Tvdb\Series;
 use App\Processor\TvdbEpisodeData;
+use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class TvdbEpisodeDataTest extends TestCase
 {
@@ -16,7 +18,10 @@ class TvdbEpisodeDataTest extends TestCase
 
     public function setUp(): void
     {
-        $this->unit = new TvdbEpisodeData();
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger->allows('info')->withAnyArgs();
+        $logger->allows('debug')->withAnyArgs();
+        $this->unit = new TvdbEpisodeData($logger);
     }
 
     public function testAddEpisodeDataToSeries()
@@ -60,7 +65,7 @@ class TvdbEpisodeDataTest extends TestCase
         );
 
         $episodes = $series->getEpisodes();
-        $this->assertCount(1, $episodes);
+        $this->assertCount(2, $episodes);
         $this->assertEquals(
             new Episode(
                 '2',

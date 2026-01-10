@@ -18,8 +18,10 @@ class EpisodeTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private Episode $unit;
-    private DocumentManager $documentManager;
-    private Builder $queryBuilder;
+    /** @var DocumentManager|\Mockery\MockInterface */
+    private $documentManager;
+    /** @var Builder|\Mockery\MockInterface */
+    private $queryBuilder;
 
 
     public function setUp(): void
@@ -130,5 +132,99 @@ class EpisodeTest extends TestCase
         $queryMock->expects('execute');
 
         $this->unit->deleteEpisodesWithTvdbSeriesId('12345');
+    }
+
+    public function testGetAllUnwatchedEpisodesReturnsArray()
+    {
+        $this->queryBuilder->expects('field')->with('watched')->andReturnSelf();
+        $this->queryBuilder->expects('equals')->with(false)->andReturnSelf();
+        $this->queryBuilder->expects('sort')->with('seriesTitle', 'ASC')->andReturnSelf();
+        $this->queryBuilder->expects('sort')->with('season', 'ASC')->andReturnSelf();
+        $this->queryBuilder->expects('sort')->with('episode', 'ASC')->andReturnSelf();
+
+        $queryMock = Mockery::mock(Query::class);
+        $this->queryBuilder->expects('getQuery')->andReturn($queryMock);
+
+        $iteratorMock = Mockery::mock(Iterator::class);
+        $queryMock->expects('execute')->andReturn($iteratorMock);
+
+        $episode1 = new EpisodeDocument();
+        $episode2 = new EpisodeDocument();
+        $iteratorMock->expects('toArray')->andReturn([$episode1, $episode2]);
+
+        $result = $this->unit->getAllUnwatchedEpisodes();
+
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+        $this->assertSame($episode1, $result[0]);
+        $this->assertSame($episode2, $result[1]);
+    }
+
+    public function testGetAllUnwatchedEpisodesReturnsEmptyArray()
+    {
+        $this->queryBuilder->expects('field')->with('watched')->andReturnSelf();
+        $this->queryBuilder->expects('equals')->with(false)->andReturnSelf();
+        $this->queryBuilder->expects('sort')->with('seriesTitle', 'ASC')->andReturnSelf();
+        $this->queryBuilder->expects('sort')->with('season', 'ASC')->andReturnSelf();
+        $this->queryBuilder->expects('sort')->with('episode', 'ASC')->andReturnSelf();
+
+        $queryMock = Mockery::mock(Query::class);
+        $this->queryBuilder->expects('getQuery')->andReturn($queryMock);
+
+        $iteratorMock = Mockery::mock(Iterator::class);
+        $queryMock->expects('execute')->andReturn($iteratorMock);
+
+        $iteratorMock->expects('toArray')->andReturn([]);
+
+        $result = $this->unit->getAllUnwatchedEpisodes();
+
+        $this->assertIsArray($result);
+        $this->assertCount(0, $result);
+    }
+
+    public function testGetRecentlyWatchedEpisodesReturnsArrayWithDefaultLimit()
+    {
+        $this->queryBuilder->expects('field')->with('watched')->andReturnSelf();
+        $this->queryBuilder->expects('equals')->with(true)->andReturnSelf();
+        $this->queryBuilder->expects('sort')->with('id', 'DESC')->andReturnSelf();
+        $this->queryBuilder->expects('limit')->with(5)->andReturnSelf();
+
+        $queryMock = Mockery::mock(Query::class);
+        $this->queryBuilder->expects('getQuery')->andReturn($queryMock);
+
+        $iteratorMock = Mockery::mock(Iterator::class);
+        $queryMock->expects('execute')->andReturn($iteratorMock);
+
+        $episode1 = new EpisodeDocument();
+        $episode2 = new EpisodeDocument();
+        $iteratorMock->expects('toArray')->andReturn([$episode1, $episode2]);
+
+        $result = $this->unit->getRecentlyWatchedEpisodes();
+
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+        $this->assertSame($episode1, $result[0]);
+        $this->assertSame($episode2, $result[1]);
+    }
+
+    public function testGetRecentlyWatchedEpisodesReturnsArrayWithCustomLimit()
+    {
+        $this->queryBuilder->expects('field')->with('watched')->andReturnSelf();
+        $this->queryBuilder->expects('equals')->with(true)->andReturnSelf();
+        $this->queryBuilder->expects('sort')->with('id', 'DESC')->andReturnSelf();
+        $this->queryBuilder->expects('limit')->with(10)->andReturnSelf();
+
+        $queryMock = Mockery::mock(Query::class);
+        $this->queryBuilder->expects('getQuery')->andReturn($queryMock);
+
+        $iteratorMock = Mockery::mock(Iterator::class);
+        $queryMock->expects('execute')->andReturn($iteratorMock);
+
+        $iteratorMock->expects('toArray')->andReturn([]);
+
+        $result = $this->unit->getRecentlyWatchedEpisodes(10);
+
+        $this->assertIsArray($result);
+        $this->assertCount(0, $result);
     }
 }

@@ -33,34 +33,34 @@ class UpdateShowsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
+
         $io->title('Updating Shows from TVDB');
-        
+
         $showRepository = $this->documentManager->getRepository(Show::class);
         $allShows = $showRepository->findAll();
-        
+
         $totalShows = count($allShows);
         $io->info("Found {$totalShows} show(s) to update");
-        
+
         if ($totalShows === 0) {
             $io->success('No shows to update');
             return Command::SUCCESS;
         }
-        
+
         $io->progressStart($totalShows);
-        
+
         $updated = 0;
         $failed = 0;
         $newEpisodes = 0;
-        
+
         foreach ($allShows as $show) {
             try {
                 $io->progressAdvance();
-                
+
                 $this->logger->info("Updating show: {$show->title} (TVDB ID: {$show->tvdbSeriesId})");
-                
+
                 $hadEpisodes = $show->hasEpisodes;
-                
+
                 // Find the latest episode for this show to determine where to start
                 $episodeRepository = $this->documentManager->getRepository(Episode::class);
                 $latestEpisode = $episodeRepository->createQueryBuilder()
@@ -70,16 +70,16 @@ class UpdateShowsCommand extends Command
                     ->limit(1)
                     ->getQuery()
                     ->getSingleResult();
-                
+
                 $fromSeason = 1;
                 $fromEpisode = 1;
-                
+
                 if ($latestEpisode) {
                     $fromSeason = $latestEpisode->season;
                     $fromEpisode = $latestEpisode->episode;
                     $this->logger->info("Latest episode found: S{$fromSeason}E{$fromEpisode}");
                 }
-                
+
                 $criteria = new Criteria(
                     $show->tvdbSeriesId,
                     $fromSeason,
@@ -87,27 +87,26 @@ class UpdateShowsCommand extends Command
                     $show->platform,
                     $show->universe
                 );
-                
+
                 $result = $this->ingestProcessor->ingest($criteria);
-                
+
                 $updated++;
-                
+
                 if (!$hadEpisodes && $result['episodeCount'] > 0) {
                     $newEpisodes++;
                     $io->writeln("\n✓ New episodes found for: {$show->title} ({$result['episodeCount']} episodes)");
                 } elseif ($hadEpisodes && $result['episodeCount'] > 0) {
                     $io->writeln("\n✓ Updated: {$show->title} ({$result['episodeCount']} total episodes)");
                 }
-                
             } catch (\Exception $e) {
                 $failed++;
                 $this->logger->error("Failed to update show {$show->title}: {$e->getMessage()}");
                 $io->writeln("\n✗ Failed to update: {$show->title} - {$e->getMessage()}");
             }
         }
-        
+
         $io->progressFinish();
-        
+
         $io->success([
             "Update completed!",
             "Total shows: {$totalShows}",
@@ -115,7 +114,7 @@ class UpdateShowsCommand extends Command
             "Failed: {$failed}",
             "Shows with new episodes: {$newEpisodes}"
         ]);
-        
+
         return Command::SUCCESS;
     }
 }

@@ -20,13 +20,13 @@ class RemoveSeriesController extends AbstractController
         try {
             $archivedSeriesRepository = new ArchivedSeries($documentManager);
             $episodeRepository = new Episode($documentManager);
-            
+
             // Archive the series before deleting episodes
             $archivedSeriesRepository->archiveSeriesByTvdbId($tvdbSeriesId);
-            
+
             // Delete all episodes for this series
             $episodeRepository->deleteEpisodesWithTvdbSeriesId($tvdbSeriesId);
-            
+
             return new JsonResponse(['message' => 'Series archived successfully'], Response::HTTP_OK);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Failed to archive series: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

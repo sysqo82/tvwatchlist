@@ -22,15 +22,15 @@ class ArchiveController extends AbstractController
     {
         $archivedSeriesRepository = new ArchivedSeries($documentManager);
         $archivedSeries = $archivedSeriesRepository->getAllArchivedSeries();
-        
+
         $archivedMovieRepository = new ArchivedMovie($documentManager);
         $archivedMovies = $archivedMovieRepository->getAllArchivedMovies();
-        
+
         $response = $this->json([
             'archivedSeries' => $archivedSeries,
             'archivedMovies' => $archivedMovies
         ]);
-        
+
         // Prevent caching to ensure fresh data is always served
         $response->setPublic(false);
         $response->setMaxAge(0);
@@ -38,7 +38,7 @@ class ArchiveController extends AbstractController
         $response->headers->addCacheControlDirective('no-cache', true);
         $response->headers->addCacheControlDirective('no-store', true);
         $response->headers->addCacheControlDirective('must-revalidate', true);
-        
+
         return $response;
     }
 
@@ -47,14 +47,14 @@ class ArchiveController extends AbstractController
     {
         try {
             $archivedSeriesRepository = new ArchivedSeries($documentManager);
-            
+
             // Get the archived series first to retrieve its details
             $archivedSeries = $archivedSeriesRepository->getArchivedSeriesByTvdbId($tvdbSeriesId);
-            
+
             if (!$archivedSeries) {
                 return new JsonResponse(['error' => 'Series not found in archive'], Response::HTTP_NOT_FOUND);
             }
-            
+
             // Re-import all episodes using the Ingest processor
             $criteria = new Criteria(
                 $tvdbSeriesId,
@@ -63,12 +63,12 @@ class ArchiveController extends AbstractController
                 $archivedSeries['platform'] ?? 'Plex',
                 $archivedSeries['universe'] ?? ''
             );
-            
+
             $ingestProcessor->ingest($criteria);
-            
+
             // Remove from archive after successful restore
             $restored = $archivedSeriesRepository->restoreSeriesFromArchive($tvdbSeriesId);
-            
+
             if ($restored) {
                 return new JsonResponse(['message' => 'Series restored successfully'], Response::HTTP_OK);
             } else {
@@ -85,7 +85,7 @@ class ArchiveController extends AbstractController
         try {
             $archivedSeriesRepository = new ArchivedSeries($documentManager);
             $deleted = $archivedSeriesRepository->permanentlyDeleteFromArchive($tvdbSeriesId);
-            
+
             if ($deleted) {
                 return new JsonResponse(['message' => 'Series permanently deleted'], Response::HTTP_OK);
             } else {
@@ -101,14 +101,14 @@ class ArchiveController extends AbstractController
     {
         try {
             $archivedMovieRepository = new ArchivedMovie($documentManager);
-            
+
             // Get the archived movie
             $archivedMovieData = $archivedMovieRepository->getArchivedMovieByTvdbId($tvdbMovieId);
-            
+
             if (!$archivedMovieData) {
                 return new JsonResponse(['error' => 'Movie not found in archive'], Response::HTTP_NOT_FOUND);
             }
-            
+
             // Create new Movie document from archived data
             $movie = new Movie();
             $movie->title = $archivedMovieData['title'];
@@ -121,13 +121,13 @@ class ArchiveController extends AbstractController
             $movie->watchedAt = null;
             $movie->addedAt = new \DateTimeImmutable();
             $movie->lastChecked = new \DateTimeImmutable();
-            
+
             $documentManager->persist($movie);
             $documentManager->flush();
-            
+
             // Remove from archive
             $archivedMovieRepository->removeArchivedMovie($tvdbMovieId);
-            
+
             return new JsonResponse(['message' => 'Movie restored successfully'], Response::HTTP_OK);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Failed to restore movie: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -139,15 +139,15 @@ class ArchiveController extends AbstractController
     {
         try {
             $archivedMovieRepository = new ArchivedMovie($documentManager);
-            
+
             $archivedMovie = $archivedMovieRepository->getArchivedMovieByTvdbId($tvdbMovieId);
-            
+
             if (!$archivedMovie) {
                 return new JsonResponse(['error' => 'Movie not found in archive'], Response::HTTP_NOT_FOUND);
             }
-            
+
             $archivedMovieRepository->removeArchivedMovie($tvdbMovieId);
-            
+
             return new JsonResponse(['message' => 'Movie permanently deleted'], Response::HTTP_OK);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => 'Failed to delete movie: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

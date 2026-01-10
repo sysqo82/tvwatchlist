@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Document;
 
-
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Serializer\Annotation\Groups;

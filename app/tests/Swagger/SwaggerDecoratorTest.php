@@ -23,7 +23,8 @@ class SwaggerDecoratorTest extends TestCase
         'info' => ['title' => 'Default Doc', 'version' => '1.0']
     ];
 
-    private NormalizerInterface $defaultDecorator;
+    /** @var NormalizerInterface|\Mockery\MockInterface */
+    private $defaultDecorator;
 
     public function setUp(): void
     {

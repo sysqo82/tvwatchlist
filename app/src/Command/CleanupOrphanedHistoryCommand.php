@@ -27,41 +27,41 @@ class CleanupOrphanedHistoryCommand extends Command
     {
         $historyRepository = $this->documentManager->getRepository(History::class);
         $movieRepository = $this->documentManager->getRepository(Movie::class);
-        
+
         // Find all History entries that have a movieId
         $movieHistories = $historyRepository->createQueryBuilder()
             ->field('movieId')->exists(true)
             ->field('movieId')->notEqual(null)
             ->getQuery()
             ->execute();
-        
+
         $deleted = 0;
-        
+
         foreach ($movieHistories as $history) {
             if ($history->movieId) {
                 // Check if the movie still exists
                 $movie = $movieRepository->find($history->movieId);
-                
+
                 if (!$movie) {
                     $output->writeln(sprintf(
                         'Removing orphaned history entry for movie ID: %s (Title: %s)',
                         $history->movieId,
                         $history->seriesTitle
                     ));
-                    
+
                     $this->documentManager->remove($history);
                     $deleted++;
                 }
             }
         }
-        
+
         if ($deleted > 0) {
             $this->documentManager->flush();
             $output->writeln(sprintf('Successfully removed %d orphaned history entries', $deleted));
         } else {
             $output->writeln('No orphaned history entries found');
         }
-        
+
         return Command::SUCCESS;
     }
 }
