@@ -2,11 +2,11 @@
   "type": "project",
   "license": "MIT",
   "require": {
-    "php": ">=8.3",
+    "php": ">=8.4",
     "ext-ctype": "*",
     "ext-iconv": "*",
-    "api-platform/core": "^3",
-    "doctrine/doctrine-bundle": "^2.10",
+    "api-platform/core": "^3.4",
+    "doctrine/doctrine-bundle": "^2.13",
     "doctrine/doctrine-migrations-bundle": "^3.2",
     "doctrine/mongodb-odm-bundle": "^4.0",
     "doctrine/orm": "^2.15",
@@ -125,7 +125,7 @@
   "extra": {
     "symfony": {
       "allow-contrib": false,
-      "require": "6.2.*",
+      "require": "6.4.*",
       "docker": false
     }
   }
