@@ -9,22 +9,14 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ODM\Document(
-    indexes: [
-        new ODM\Index(
-            keys: ['archivedAt' => 'desc']
-        ),
-        new ODM\Index(
-            keys: ['tvdbMovieId' => 'asc'],
-            unique: true
-        )
-    ]
-)]
+#[ODM\Document]
+#[ODM\Index(keys: ['archivedAt' => 'desc'])]
+#[ODM\Index(keys: ['tvdbMovieId' => 'asc'], options: ['unique' => true])]
 #[ODM\HasLifecycleCallbacks]
 class ArchivedMovie
 {
     #[Groups(['archived_movie:read','identifier'])]
-    #[ODM\Id(type: 'integer', strategy: 'INCREMENT')]
+    #[ODM\Id(type: 'int', strategy: 'INCREMENT')]
     private int $id;
 
     #[Groups(['archived_movie:read'])]
