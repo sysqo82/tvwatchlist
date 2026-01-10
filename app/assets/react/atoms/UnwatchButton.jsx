@@ -14,9 +14,14 @@ export default function UnwatchButton({id, refreshState, size = "lg", variant = 
         })
         .then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                console.error(`Failed to unmark episode ${id}:`, response.status, response.statusText);
+                throw new Error(`Failed to unmark episode: ${response.status}`);
             }
             return response.json();
+        })
+        .catch((error) => {
+            console.error(`Error unmarking episode ${id}:`, error);
+            throw error;
         });
 
         // Then, find and delete the corresponding history entry
@@ -28,7 +33,13 @@ export default function UnwatchButton({id, refreshState, size = "lg", variant = 
                     "Content-Type": "application/ld+json"
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    console.error(`Failed to fetch histories for episode ${id}:`, response.status);
+                    throw new Error(`Failed to fetch histories: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 // Find the history entry for this episode
                 const historyEntry = data['hydra:member'].find(entry => 
@@ -40,10 +51,25 @@ export default function UnwatchButton({id, refreshState, size = "lg", variant = 
                     // Delete the history entry
                     return fetch('/api/histories/' + historyEntry.id, {
                         method: "DELETE"
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error(`Failed to delete History ${historyEntry.id}:`, response.status);
+                            throw new Error(`Failed to delete History entry: ${response.status}`);
+                        }
+                        console.log(`Successfully deleted History entry ${historyEntry.id} for episode ${episode.id}`);
+                        return response;
                     });
+                } else {
+                    console.warn(`No History entry found for episode ${episode.id} (${episode.seriesTitle} - ${episode.title})`);
                 }
             });
-        }).finally(() => {
+        })
+        .catch((error) => {
+            console.error(`Critical error in UnwatchButton for episode ${id}:`, error);
+            alert(`Failed to unwatch episode. Please try again. Error: ${error.message}`);
+        })
+        .finally(() => {
             refreshState();
         });
     };

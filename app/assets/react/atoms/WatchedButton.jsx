@@ -13,14 +13,19 @@ export default function WatchedButton({id, refreshState, size = "lg", className 
         })
         .then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                console.error(`Failed to mark episode ${id} as watched:`, response.status, response.statusText);
+                throw new Error(`Failed to mark episode as watched: ${response.status}`);
             }
             return response.json();
+        })
+        .catch((error) => {
+            console.error(`Error marking episode ${id} as watched:`, error);
+            throw error;
         });
 
         watchedEpisode.then(episode => {
             let date = new Date().toUTCString();
-            return fetch('/api/histories', {
+            return fetch('/api/history', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/ld+json"
@@ -37,8 +42,24 @@ export default function WatchedButton({id, refreshState, size = "lg", className 
                     poster: episode.poster,
                     watchedAt: date
                 })
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    console.error(`Failed to create History for episode ${episode.id}:`, response.status, response.statusText);
+                    throw new Error(`Failed to create History entry: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((history) => {
+                console.log(`Successfully created History entry for episode ${episode.id}:`, history);
+                return history;
             });
-        }).finally(() => {
+        })
+        .catch((error) => {
+            console.error(`Critical error in WatchedButton for episode ${id}:`, error);
+            alert(`Failed to mark episode as watched. Please try again. Error: ${error.message}`);
+        })
+        .finally(() => {
             refreshState();
         });
     };
