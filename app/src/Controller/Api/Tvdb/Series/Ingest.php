@@ -29,7 +29,7 @@ class Ingest extends AbstractController
             $result = $this->ingestProcess->ingest(
                 $this->criteria
             );
-            
+
             $episodeCount = $result['episodeCount'] ?? 0;
             if ($episodeCount === 0) {
                 return new JsonResponse([
@@ -42,7 +42,7 @@ class Ingest extends AbstractController
                     'hasEpisodes' => false
                 ]);
             }
-            
+
             return new JsonResponse([
                 'message' => sprintf(
                     'Processing completed for series: %s. Added %d episode(s) from Season: %d, Episode:%d',

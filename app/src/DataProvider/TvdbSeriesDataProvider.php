@@ -44,9 +44,9 @@ class TvdbSeriesDataProvider
             $seasonNumber = $seasonData['number'] ?? 0;
             $seasonTypeId = $seasonData['type']['id'] ?? 0;
             $seasonId = $seasonData['id'] ?? 0;
-            
+
             $this->logger->info("Checking season: {$seasonNumber}, type: {$seasonTypeId}, id: {$seasonId}");
-            
+
             if (
                 $seasonTypeId !== self::REGULAR_SEASON_TYPE
                 || $seasonNumber < $fromSeason
@@ -67,7 +67,7 @@ class TvdbSeriesDataProvider
 
             $episodesCount = isset($season['data']['episodes']) ? count($season['data']['episodes']) : 0;
             $this->logger->info("Season {$seasonData['number']} has {$episodesCount} episodes in the API response");
-            
+
             if ($episodesCount === 0) {
                 $this->logger->warning("Season {$seasonData['number']} returned 0 episodes from TVDB API");
                 $this->logger->debug("Season data: " . json_encode($season['data']));

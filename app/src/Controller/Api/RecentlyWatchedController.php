@@ -26,28 +26,28 @@ class RecentlyWatchedController extends AbstractController
             ['watchedAt' => 'DESC'],
             100
         );
-        
+
         // Get all archived series tvdbSeriesIds to filter them out
         $archivedSeriesRepository = $documentManager->getRepository(ArchivedSeries::class);
         $archivedSeriesList = $archivedSeriesRepository->findAll();
         $archivedSeriesIds = array_map(fn($archived) => $archived->tvdbSeriesId, $archivedSeriesList);
-        
+
         // Get all archived movie tvdbMovieIds to filter them out
         $archivedMovieRepository = $documentManager->getRepository(ArchivedMovie::class);
         $archivedMoviesList = $archivedMovieRepository->findAll();
         $archivedMovieIds = array_map(fn($archived) => $archived->tvdbMovieId, $archivedMoviesList);
-        
+
         // Convert history entries to array format and filter out archived items
-        $allWatched = array_values(array_filter(array_map(function($history) use ($documentManager, $archivedSeriesIds, $archivedMovieIds) {
+        $allWatched = array_values(array_filter(array_map(function ($history) use ($documentManager, $archivedSeriesIds, $archivedMovieIds) {
             $isMovie = $history->episodeTitle === 'Movie';
-            
+
             // Skip if this is an archived series
             if (!$isMovie && $history->tvdbSeriesId && in_array($history->tvdbSeriesId, $archivedSeriesIds)) {
                 return null;
             }
-            
+
             $description = null;
-            
+
             // If it's a movie, fetch it and check if it's archived
             if ($isMovie && $history->movieId) {
                 $movieRepository = $documentManager->getRepository(Movie::class);
@@ -60,7 +60,7 @@ class RecentlyWatchedController extends AbstractController
                     $description = $movie->description;
                 }
             }
-            
+
             return [
                 'historyId' => $history->getId(),
                 'seriesTitle' => $history->seriesTitle,
@@ -76,9 +76,9 @@ class RecentlyWatchedController extends AbstractController
                 'movieId' => $history->movieId
             ];
         }, $recentHistory)));
-        
+
         $response = $this->json($allWatched);
-        
+
         // Prevent caching to ensure fresh data is always served
         $response->setPublic(false);
         $response->setMaxAge(0);
@@ -86,7 +86,7 @@ class RecentlyWatchedController extends AbstractController
         $response->headers->addCacheControlDirective('no-cache', true);
         $response->headers->addCacheControlDirective('no-store', true);
         $response->headers->addCacheControlDirective('must-revalidate', true);
-        
+
         return $response;
     }
 }

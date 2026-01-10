@@ -24,7 +24,7 @@ class ArchivedSeriesTest extends TestCase
     public function setUp(): void
     {
         BypassFinals::enable();
-        
+
         $this->documentManager = Mockery::mock(DocumentManager::class);
         $this->unit = new ArchivedSeries($this->documentManager);
     }
@@ -34,27 +34,27 @@ class ArchivedSeriesTest extends TestCase
         $archivedSeries1 = new ArchivedSeriesDocument();
         $archivedSeries1->seriesTitle = 'Series 1';
         $archivedSeries1->tvdbSeriesId = '12345';
-        
+
         $archivedSeries2 = new ArchivedSeriesDocument();
         $archivedSeries2->seriesTitle = 'Series 2';
         $archivedSeries2->tvdbSeriesId = '67890';
-        
+
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([$archivedSeries1, $archivedSeries2]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->expects('sort')->with('archivedAt', 'DESC')->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(ArchivedSeriesDocument::class)
             ->andReturn($queryBuilder);
-        
+
         $result = $this->unit->getAllArchivedSeries();
-        
+
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
         $this->assertEquals('Series 1', $result[0]->seriesTitle);
@@ -69,14 +69,14 @@ class ArchivedSeriesTest extends TestCase
         $episode->poster = 'poster.jpg';
         $episode->universe = 'MCU';
         $episode->platform = 'Disney+';
-        
+
         // Mock episode query
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([$episode]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->expects('field')->with('tvdbSeriesId')->andReturnSelf();
         $queryBuilder->expects('equals')->with('12345')->andReturnSelf();
@@ -84,20 +84,20 @@ class ArchivedSeriesTest extends TestCase
         $queryBuilder->expects('sort')->with('episode', 'ASC')->andReturnSelf();
         $queryBuilder->expects('limit')->with(1)->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         // Mock count queries
         $countQuery1 = Mockery::mock(Query::class);
         $countQuery1->expects('execute')->andReturn(10);
-        
+
         $countQueryBuilder1 = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $countQueryBuilder1->expects('field')->with('tvdbSeriesId')->andReturnSelf();
         $countQueryBuilder1->expects('equals')->with('12345')->andReturnSelf();
         $countQueryBuilder1->expects('count')->andReturnSelf();
         $countQueryBuilder1->expects('getQuery')->andReturn($countQuery1);
-        
+
         $countQuery2 = Mockery::mock(Query::class);
         $countQuery2->expects('execute')->andReturn(5);
-        
+
         $countQueryBuilder2 = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $countQueryBuilder2->expects('field')->with('tvdbSeriesId')->andReturnSelf();
         $countQueryBuilder2->expects('equals')->with('12345')->andReturnSelf();
@@ -105,17 +105,17 @@ class ArchivedSeriesTest extends TestCase
         $countQueryBuilder2->expects('equals')->with(true)->andReturnSelf();
         $countQueryBuilder2->expects('count')->andReturnSelf();
         $countQueryBuilder2->expects('getQuery')->andReturn($countQuery2);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(EpisodeDocument::class)
             ->times(3)
             ->andReturn($queryBuilder, $countQueryBuilder1, $countQueryBuilder2);
-        
+
         $this->documentManager->expects('persist')
             ->with(Mockery::type(ArchivedSeriesDocument::class));
-        
+
         $this->documentManager->expects('flush');
-        
+
         $this->unit->archiveSeriesByTvdbId('12345');
     }
 
@@ -123,24 +123,24 @@ class ArchivedSeriesTest extends TestCase
     {
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->allows('field')->andReturnSelf();
         $queryBuilder->allows('equals')->andReturnSelf();
         $queryBuilder->allows('sort')->andReturnSelf();
         $queryBuilder->allows('limit')->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(EpisodeDocument::class)
             ->andReturn($queryBuilder);
-        
+
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('No episodes found for series ID: 12345');
-        
+
         $this->unit->archiveSeriesByTvdbId('12345');
     }
 
@@ -148,27 +148,27 @@ class ArchivedSeriesTest extends TestCase
     {
         $archivedSeries = new ArchivedSeriesDocument();
         $archivedSeries->tvdbSeriesId = '12345';
-        
+
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([$archivedSeries]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->expects('field')->with('tvdbSeriesId')->andReturnSelf();
         $queryBuilder->expects('equals')->with('12345')->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(ArchivedSeriesDocument::class)
             ->andReturn($queryBuilder);
-        
+
         $this->documentManager->expects('remove')->with($archivedSeries);
         $this->documentManager->expects('flush');
-        
+
         $result = $this->unit->restoreSeriesFromArchive('12345');
-        
+
         $this->assertTrue($result);
     }
 
@@ -176,21 +176,21 @@ class ArchivedSeriesTest extends TestCase
     {
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->allows('field')->andReturnSelf();
         $queryBuilder->allows('equals')->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(ArchivedSeriesDocument::class)
             ->andReturn($queryBuilder);
-        
+
         $result = $this->unit->restoreSeriesFromArchive('12345');
-        
+
         $this->assertFalse($result);
     }
 
@@ -208,24 +208,24 @@ class ArchivedSeriesTest extends TestCase
         $archivedSeries->watchedEpisodes = 5;
         $archivedSeries->archivedAt = new \DateTimeImmutable();
         $archivedSeries->archiveReason = 'Test reason';
-        
+
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([$archivedSeries]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->expects('field')->with('tvdbSeriesId')->andReturnSelf();
         $queryBuilder->expects('equals')->with('12345')->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(ArchivedSeriesDocument::class)
             ->andReturn($queryBuilder);
-        
+
         $result = $this->unit->getArchivedSeriesByTvdbId('12345');
-        
+
         $this->assertIsArray($result);
         $this->assertEquals('12345', $result['tvdbSeriesId']);
         $this->assertEquals('Test Series', $result['seriesTitle']);
@@ -239,21 +239,21 @@ class ArchivedSeriesTest extends TestCase
     {
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->allows('field')->andReturnSelf();
         $queryBuilder->allows('equals')->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(ArchivedSeriesDocument::class)
             ->andReturn($queryBuilder);
-        
+
         $result = $this->unit->getArchivedSeriesByTvdbId('12345');
-        
+
         $this->assertNull($result);
     }
 
@@ -261,27 +261,27 @@ class ArchivedSeriesTest extends TestCase
     {
         $archivedSeries = new ArchivedSeriesDocument();
         $archivedSeries->tvdbSeriesId = '12345';
-        
+
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([$archivedSeries]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->expects('field')->with('tvdbSeriesId')->andReturnSelf();
         $queryBuilder->expects('equals')->with('12345')->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(ArchivedSeriesDocument::class)
             ->andReturn($queryBuilder);
-        
+
         $this->documentManager->expects('remove')->with($archivedSeries);
         $this->documentManager->expects('flush');
-        
+
         $result = $this->unit->permanentlyDeleteFromArchive('12345');
-        
+
         $this->assertTrue($result);
     }
 
@@ -289,21 +289,21 @@ class ArchivedSeriesTest extends TestCase
     {
         $iterator = Mockery::mock(Iterator::class);
         $iterator->expects('toArray')->andReturn([]);
-        
+
         $query = Mockery::mock(Query::class);
         $query->expects('execute')->andReturn($iterator);
-        
+
         $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
         $queryBuilder->allows('field')->andReturnSelf();
         $queryBuilder->allows('equals')->andReturnSelf();
         $queryBuilder->expects('getQuery')->andReturn($query);
-        
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(ArchivedSeriesDocument::class)
             ->andReturn($queryBuilder);
-        
+
         $result = $this->unit->permanentlyDeleteFromArchive('12345');
-        
+
         $this->assertFalse($result);
     }
 }

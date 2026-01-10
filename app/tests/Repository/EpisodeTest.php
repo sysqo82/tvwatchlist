@@ -153,7 +153,7 @@ class EpisodeTest extends TestCase
         $iteratorMock->expects('toArray')->andReturn([$episode1, $episode2]);
 
         $result = $this->unit->getAllUnwatchedEpisodes();
-        
+
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
         $this->assertSame($episode1, $result[0]);
@@ -177,7 +177,7 @@ class EpisodeTest extends TestCase
         $iteratorMock->expects('toArray')->andReturn([]);
 
         $result = $this->unit->getAllUnwatchedEpisodes();
-        
+
         $this->assertIsArray($result);
         $this->assertCount(0, $result);
     }
@@ -200,7 +200,7 @@ class EpisodeTest extends TestCase
         $iteratorMock->expects('toArray')->andReturn([$episode1, $episode2]);
 
         $result = $this->unit->getRecentlyWatchedEpisodes();
-        
+
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
         $this->assertSame($episode1, $result[0]);
@@ -223,7 +223,7 @@ class EpisodeTest extends TestCase
         $iteratorMock->expects('toArray')->andReturn([]);
 
         $result = $this->unit->getRecentlyWatchedEpisodes(10);
-        
+
         $this->assertIsArray($result);
         $this->assertCount(0, $result);
     }

@@ -29,7 +29,7 @@ class Ingest extends AbstractController
             $result = $this->movieIngestProcess->ingest(
                 $this->criteria
             );
-            
+
             return new JsonResponse([
                 'message' => sprintf(
                     'Movie "%s" was successfully added to your watchlist.',

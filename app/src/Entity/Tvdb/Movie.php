@@ -7,7 +7,7 @@ namespace App\Entity\Tvdb;
 class Movie
 {
     public const FALLBACK_POSTER = '/build/images/fallback-image.png';
-    
+
     public readonly string $tvdbId;
     public readonly string $title;
     public readonly string $poster;

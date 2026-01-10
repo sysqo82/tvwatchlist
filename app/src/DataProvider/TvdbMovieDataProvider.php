@@ -19,9 +19,9 @@ class TvdbMovieDataProvider
     public function getMovie(string $tvdbMovieId): ?Movie
     {
         $this->logger->info("Fetching movie data for TVDB ID: {$tvdbMovieId}");
-        
+
         $tvdbApiMovieData = json_decode($this->client->movieExtended($tvdbMovieId)->getContent(), true);
-        
+
         if ($tvdbApiMovieData['status'] !== 'success') {
             $this->logger->error("Movie API call failed for movieId: {$tvdbMovieId}");
             return null;
@@ -29,7 +29,7 @@ class TvdbMovieDataProvider
 
         $data = $tvdbApiMovieData['data'];
         $this->logger->info("Movie data retrieved: " . $data['name']);
-        
+
         // Try to get English translation for overview
         $description = '';
         if (isset($data['overviewTranslations']) && in_array('eng', $data['overviewTranslations'])) {
@@ -43,12 +43,12 @@ class TvdbMovieDataProvider
                 $this->logger->warning("Could not fetch English translations: " . $e->getMessage());
             }
         }
-        
+
         // Fallback to direct overview field if it exists
         if (empty($description)) {
             $description = $data['overview'] ?? '';
         }
-        
+
         $this->logger->info("Description found: " . ($description ? substr($description, 0, 100) . '...' : 'NO'));
 
         $movie = new Movie(

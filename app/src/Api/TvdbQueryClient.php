@@ -110,7 +110,7 @@ class TvdbQueryClient extends TvdbClientBase
             throw new RuntimeException('Error while getting extended movie data', 0, $e);
         }
     }
-    
+
     public function movieTranslations(string $movieId, string $language = 'eng'): ResponseInterface
     {
         try {

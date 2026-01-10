@@ -143,7 +143,7 @@ class TvdbSeriesDataProviderTest extends TestCase
         $this->seasonResponse->expects('getContent')->andReturn(json_encode([
             'status' => 'failure',
         ]));
-        
+
         $this->logger->expects('error')->withAnyArgs()->once();
 
         $this->assertNull($this->unit->getSeries('123'));

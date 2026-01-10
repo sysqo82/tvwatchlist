@@ -25,7 +25,7 @@ class MovieIngest
     public function ingest(MovieCriteria $criteria): array
     {
         $this->logger->info("Starting ingestion for movie ID: {$criteria->tvdbMovieId}");
-        
+
         $movie = $this->tvdbMovieDataProvider->getMovie($criteria->tvdbMovieId);
 
         $this->logger->info("Movie data retrieved: " . ($movie ? $movie->title : 'NULL'));
@@ -38,13 +38,13 @@ class MovieIngest
         // Save or update the movie record
         $movieRepository = $this->documentManager->getRepository(MovieDocument::class);
         $movieDocument = $movieRepository->findOneBy(['tvdbMovieId' => $criteria->tvdbMovieId]);
-        
+
         if (!$movieDocument) {
             $movieDocument = new MovieDocument();
             $movieDocument->tvdbMovieId = $criteria->tvdbMovieId;
             $movieDocument->addedAt = new DateTimeImmutable();
         }
-        
+
         $movieDocument->title = $movie->title;
         $movieDocument->poster = $movie->getPoster();
         $movieDocument->description = $movie->overview;
@@ -52,7 +52,7 @@ class MovieIngest
         $movieDocument->platform = $criteria->platform;
         $movieDocument->lastChecked = new DateTimeImmutable();
         $movieDocument->runtime = $movie->runtime;
-        
+
         if ($movie->releaseDate) {
             try {
                 $movieDocument->releaseDate = new DateTimeImmutable($movie->releaseDate);
@@ -60,12 +60,12 @@ class MovieIngest
                 $this->logger->warning("Invalid release date: {$movie->releaseDate}");
             }
         }
-        
+
         $this->documentManager->persist($movieDocument);
         $this->documentManager->flush();
-        
+
         $this->logger->info("Movie ingested: {$movie->title}");
-        
+
         return [
             'movieTitle' => $movie->title,
             'movieId' => $criteria->tvdbMovieId
