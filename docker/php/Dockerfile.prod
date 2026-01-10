@@ -2,7 +2,7 @@ FROM php:8.4-fpm as build
 
 ENV OPCACHE_VALIDATE_TIMESTAMPS=0
 
-ARG MONGODB_VERSION=1.15.1
+ARG MONGODB_VERSION=2.1.4
 
 RUN apt update \
     && apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip libcurl4-openssl-dev pkg-config libssl-dev cron nginx \

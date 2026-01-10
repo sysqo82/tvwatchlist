@@ -191,7 +191,7 @@ class SwaggerDecoratorTest extends TestCase
         $format = 'format';
 
         $this->defaultDecorator->shouldReceive('supportsNormalization')
-            ->with($data, $format)
+            ->with($data, $format, [])
             ->andReturn(true);
 
         $this->assertTrue($swaggerDecorator->supportsNormalization($data, $format));

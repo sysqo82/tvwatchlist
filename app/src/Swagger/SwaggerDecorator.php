@@ -18,9 +18,9 @@ class SwaggerDecorator implements NormalizerInterface
     ) {
     }
 
-    public function normalize($object, $format = null, array $context = [])
+    public function normalize(mixed $data, ?string $format = null, array $context = []): \ArrayObject|array|string|int|float|bool|null
     {
-        $baseDoc = $this->defaultDecorator->normalize($object, $format, $context);
+        $baseDoc = $this->defaultDecorator->normalize($data, $format, $context);
         $config = $this->parser->parseFile($this->configLocation);
 
         if ($config) {
@@ -42,9 +42,14 @@ class SwaggerDecorator implements NormalizerInterface
         return $baseDoc;
     }
 
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
-        return $this->defaultDecorator->supportsNormalization($data, $format);
+        return $this->defaultDecorator->supportsNormalization($data, $format, $context);
+    }
+
+    public function getSupportedTypes(?string $format): array
+    {
+        return $this->defaultDecorator->getSupportedTypes($format);
     }
 
     private function mergeDocRecursively($baseDoc, array $config)
