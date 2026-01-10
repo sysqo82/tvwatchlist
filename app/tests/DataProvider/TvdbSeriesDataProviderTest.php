@@ -21,6 +21,7 @@ class TvdbSeriesDataProviderTest extends TestCase
     private TvdbEpisodeData $episodeDataProcessor;
     private ResponseInterface $seriesResponse;
     private ResponseInterface $seasonResponse;
+    private LoggerInterface $logger;
 
     public function setUp(): void
     {
@@ -36,12 +37,12 @@ class TvdbSeriesDataProviderTest extends TestCase
             ->andReturn($this->seasonResponse)
             ->byDefault();
 
-        $logger = Mockery::mock(LoggerInterface::class);
-        $logger->allows('info')->withAnyArgs();
-        $logger->allows('debug')->withAnyArgs();
-        $this->episodeDataProcessor = new TvdbEpisodeData($logger);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->logger->allows('info')->withAnyArgs();
+        $this->logger->allows('debug')->withAnyArgs();
+        $this->episodeDataProcessor = new TvdbEpisodeData($this->logger);
 
-        $this->unit = new TvdbSeriesDataProvider($this->client, $this->episodeDataProcessor, $logger);
+        $this->unit = new TvdbSeriesDataProvider($this->client, $this->episodeDataProcessor, $this->logger);
     }
 
     public function testGetSeriesReturnsNullWhenStatusNotSuccess(): void
@@ -138,6 +139,8 @@ class TvdbSeriesDataProviderTest extends TestCase
         $this->seasonResponse->expects('getContent')->andReturn(json_encode([
             'status' => 'failure',
         ]));
+        
+        $this->logger->expects('error')->withAnyArgs()->once();
 
         $this->assertNull($this->unit->getSeries('123'));
     }

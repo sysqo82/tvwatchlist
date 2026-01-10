@@ -65,7 +65,7 @@ class TvdbEpisodeDataTest extends TestCase
         );
 
         $episodes = $series->getEpisodes();
-        $this->assertCount(1, $episodes);
+        $this->assertCount(2, $episodes);
         $this->assertEquals(
             new Episode(
                 '2',

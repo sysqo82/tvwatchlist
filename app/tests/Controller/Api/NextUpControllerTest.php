@@ -6,7 +6,10 @@ use App\Controller\Api\NextUpController;
 use App\Document\Episode as EpisodeDocument;
 use App\Helper\NextUpHelper;
 use App\Repository\Episode as EpisodeRepository;
+use DG\BypassFinals;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Query\Query;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
@@ -24,6 +27,8 @@ class NextUpControllerTest extends TestCase
 
     public function setUp(): void
     {
+        BypassFinals::enable();
+        
         $this->nextUpEpisodeHelper = Mockery::mock(NextUpHelper::class);
         $this->episodeRepository = Mockery::mock(EpisodeRepository::class);
         $this->documentManager = Mockery::mock(DocumentManager::class);
@@ -41,9 +46,27 @@ class NextUpControllerTest extends TestCase
 
     public function testSearchReturnsJsonResponseFromSeriesNotOnRecentlyWatchedList(): void
     {
-        $this->documentManager->expects('getRepository')->andReturn($this->episodeRepository);
-        $this->episodeRepository->expects('getAllUnwatchedEpisodes')->andReturn([]);
-        $this->episodeRepository->expects('findBy')->andReturn([]);
+        $iterator = Mockery::mock(Iterator::class);
+        $iterator->allows('toArray')->andReturn([]);
+        
+        $query = Mockery::mock(Query::class);
+        $query->allows('execute')->andReturn($iterator);
+        
+        $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
+        $queryBuilder->expects('field')->with('watched')->andReturnSelf();
+        $queryBuilder->expects('equals')->with(false)->andReturnSelf();
+        $queryBuilder->allows('sort')->andReturnSelf();
+        $queryBuilder->expects('getQuery')->andReturn($query);
+        
+        $this->documentManager->expects('createQueryBuilder')->andReturn($queryBuilder);
+        
+        $showRepo = Mockery::mock();
+        $showRepo->expects('findBy')->with(['hasEpisodes' => false])->andReturn([]);
+        
+        $movieRepo = Mockery::mock();
+        $movieRepo->expects('findBy')->with(['watched' => false])->andReturn([]);
+        
+        $this->documentManager->expects('getRepository')->times(2)->andReturn($showRepo, $movieRepo);
         
         $response = $this->unit->search($this->documentManager);
         $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
@@ -51,9 +74,23 @@ class NextUpControllerTest extends TestCase
 
     public function testSearchReturnsJsonResponseFromRecentlyWatchedList(): void
     {
-        $this->documentManager->expects('getRepository')->andReturn($this->episodeRepository);
-        $this->episodeRepository->expects('getAllUnwatchedEpisodes')->andReturn([]);
-        $this->episodeRepository->expects('findBy')->andReturn([]);
+        $iterator = Mockery::mock(Iterator::class);
+        $iterator->allows('toArray')->andReturn([]);
+        
+        $query = Mockery::mock(Query::class);
+        $query->allows('execute')->andReturn($iterator);
+        
+        $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
+        $queryBuilder->allows('field')->andReturnSelf();
+        $queryBuilder->allows('equals')->andReturnSelf();
+        $queryBuilder->allows('sort')->andReturnSelf();
+        $queryBuilder->allows('getQuery')->andReturn($query);
+        $this->documentManager->expects('createQueryBuilder')->andReturn($queryBuilder);
+        $showRepo = Mockery::mock();
+        $showRepo->expects('findBy')->andReturn([]);
+        $movieRepo = Mockery::mock();
+        $movieRepo->expects('findBy')->andReturn([]);
+        $this->documentManager->expects('getRepository')->times(2)->andReturn($showRepo, $movieRepo);
         
         $response = $this->unit->search($this->documentManager);
         $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
@@ -61,9 +98,23 @@ class NextUpControllerTest extends TestCase
 
     public function testSearchReturnsJsonResponseWhenItCantFindEpisodeFromRepository(): void
     {
-        $this->documentManager->expects('getRepository')->andReturn($this->episodeRepository);
-        $this->episodeRepository->expects('getAllUnwatchedEpisodes')->andReturn([]);
-        $this->episodeRepository->expects('findBy')->andReturn([]);
+        $iterator = Mockery::mock(Iterator::class);
+        $iterator->allows('toArray')->andReturn([]);
+        
+        $query = Mockery::mock(Query::class);
+        $query->allows('execute')->andReturn($iterator);
+        
+        $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
+        $queryBuilder->allows('field')->andReturnSelf();
+        $queryBuilder->allows('equals')->andReturnSelf();
+        $queryBuilder->allows('sort')->andReturnSelf();
+        $queryBuilder->allows('getQuery')->andReturn($query);
+        $this->documentManager->expects('createQueryBuilder')->andReturn($queryBuilder);
+        $showRepo = Mockery::mock();
+        $showRepo->expects('findBy')->andReturn([]);
+        $movieRepo = Mockery::mock();
+        $movieRepo->expects('findBy')->andReturn([]);
+        $this->documentManager->expects('getRepository')->times(2)->andReturn($showRepo, $movieRepo);
         
         $response = $this->unit->search($this->documentManager);
         $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
@@ -71,9 +122,23 @@ class NextUpControllerTest extends TestCase
 
     public function testSearchReturnsJsonResponseFromEmptyList(): void
     {
-        $this->documentManager->expects('getRepository')->andReturn($this->episodeRepository);
-        $this->episodeRepository->expects('getAllUnwatchedEpisodes')->andReturn([]);
-        $this->episodeRepository->expects('findBy')->andReturn([]);
+        $iterator = Mockery::mock(Iterator::class);
+        $iterator->allows('toArray')->andReturn([]);
+        
+        $query = Mockery::mock(Query::class);
+        $query->allows('execute')->andReturn($iterator);
+        
+        $queryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
+        $queryBuilder->allows('field')->andReturnSelf();
+        $queryBuilder->allows('equals')->andReturnSelf();
+        $queryBuilder->allows('sort')->andReturnSelf();
+        $queryBuilder->allows('getQuery')->andReturn($query);
+        $this->documentManager->expects('createQueryBuilder')->andReturn($queryBuilder);
+        $showRepo = Mockery::mock();
+        $showRepo->expects('findBy')->andReturn([]);
+        $movieRepo = Mockery::mock();
+        $movieRepo->expects('findBy')->andReturn([]);
+        $this->documentManager->expects('getRepository')->times(2)->andReturn($showRepo, $movieRepo);
         
         $response = $this->unit->search($this->documentManager);
         $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);

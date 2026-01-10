@@ -41,18 +41,22 @@ class TvdbSeriesDataProvider
         );
 
         foreach ($tvdbApiSeriesData['data']['seasons'] as $seasonData) {
-            $this->logger->info("Checking season: {$seasonData['number']}, type: {$seasonData['type']['id']}, id: {$seasonData['id']}");
+            $seasonNumber = $seasonData['number'] ?? 0;
+            $seasonTypeId = $seasonData['type']['id'] ?? 0;
+            $seasonId = $seasonData['id'] ?? 0;
+            
+            $this->logger->info("Checking season: {$seasonNumber}, type: {$seasonTypeId}, id: {$seasonId}");
             
             if (
-                $seasonData['type']['id'] !== self::REGULAR_SEASON_TYPE
-                || $seasonData['number'] < $fromSeason
+                $seasonTypeId !== self::REGULAR_SEASON_TYPE
+                || $seasonNumber < $fromSeason
             ) {
-                $this->logger->info("Skipping season {$seasonData['number']} (type={$seasonData['type']['id']}, required type=" . self::REGULAR_SEASON_TYPE . ")");
+                $this->logger->info("Skipping season {$seasonNumber} (type={$seasonTypeId}, required type=" . self::REGULAR_SEASON_TYPE . ")");
                 continue;
             }
 
-            $this->logger->info("Fetching episodes for season {$seasonData['number']}, seasonId: {$seasonData['id']}");
-            $seasonResponse = $this->client->seasonExtended((string) $seasonData['id']);
+            $this->logger->info("Fetching episodes for season {$seasonNumber}, seasonId: {$seasonId}");
+            $seasonResponse = $this->client->seasonExtended((string) $seasonId);
 
             $season = json_decode($seasonResponse->getContent(), true);
 

@@ -19,18 +19,20 @@ class IngestTest extends TestCase
         $ingestProcess = Mockery::mock(IngestProcessor::class);
         $ingestProcess->expects('ingest')
             ->once()
-            ->with($criteria);
+            ->with($criteria)
+            ->andReturn([
+                'episodeCount' => 0,
+                'seriesTitle' => 'Test Series'
+            ]);
 
         $ingest = new Ingest($criteria, $ingestProcess);
         $response = $ingest->handle();
 
-        $this->assertEquals(
-            [
-                'message' => 'Processing started for series: 123 from Season: 1, Episode:1',
-                'status' => 202,
-                'title' => 'OK'
-            ],
-            json_decode($response->getContent(), true)
-        );
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals(202, $responseData['status']);
+        $this->assertEquals('Show Added (No Episodes)', $responseData['title']);
+        $this->assertArrayHasKey('message', $responseData);
+        $this->assertArrayHasKey('hasEpisodes', $responseData);
+        $this->assertFalse($responseData['hasEpisodes']);
     }
 }
