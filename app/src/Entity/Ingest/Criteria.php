@@ -10,8 +10,7 @@ readonly class Criteria
         public string $tvdbSeriesId,
         public int $season,
         public int $episode,
-        public string $platform = '',
-        public string $universe = ''
+        public string $platform = ''
     ) {
     }
 }

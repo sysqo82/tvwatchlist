@@ -101,12 +101,12 @@ export default function IngestForm({id, type = 'series'}) {
             {isMovie && (
                 <div className="movie-metadata mb-3">
                     <div className="mb-2">
-                        <label htmlFor={id + "platform"} className="form-label text-muted">Platform:</label>
+                        <label htmlFor={id + "platform"} className="form-label">Platform:</label>
                         <input 
                             name={id + "platform"} 
                             type="text" 
                             placeholder="Plex" 
-                            id="platform"
+                            id={id + "platform"}
                             className="form-control"
                             value={platform}
                             onChange={(e) => setPlatform(e.target.value)}

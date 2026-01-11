@@ -119,6 +119,7 @@ if (Encore.isProduction()) {
                 /^modal/,
                 /^dropdown/,
                 /^collapse/,
+                /^Collapsible/,
                 /^show$/,
                 /^fade$/,
                 /^active$/,

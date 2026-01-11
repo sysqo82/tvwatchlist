@@ -53,7 +53,6 @@ class Ingest
         $showDocument->poster = $series->getPoster();
         $showDocument->status = EpisodeDocument::VALID_STATUSES[$series->status] ?? 'upcoming';
         $showDocument->platform = $criteria->platform;
-        $showDocument->universe = $criteria->universe;
         $showDocument->lastChecked = new DateTimeImmutable();
 
         $episodes = $series->getEpisodes();
@@ -84,7 +83,6 @@ class Ingest
             $episodeDocument->seriesTitle = $series->title;
             $episodeDocument->tvdbSeriesId = $series->tvdbId;
             $episodeDocument->poster = $series->getPoster();
-            $episodeDocument->universe = $criteria->universe;
             $episodeDocument->platform = $criteria->platform;
             $episodeDocument->status = EpisodeDocument::VALID_STATUSES[$series->status];
             $episodeDocument->airDate = new DateTimeImmutable($episode->aired);

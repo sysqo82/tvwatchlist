@@ -79,10 +79,6 @@ class History
     public ?string $movieId = null;
 
     #[Groups(['history:read','history:write'])]
-    #[ODM\Field(type: 'string')]
-    public ?string $universe;
-
-    #[Groups(['history:read','history:write'])]
     #[ODM\Field(type: 'date')]
     #[Assert\NotBlank]
     public DateTimeInterface $airDate;

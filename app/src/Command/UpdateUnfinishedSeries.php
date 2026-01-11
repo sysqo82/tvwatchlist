@@ -48,8 +48,7 @@ class UpdateUnfinishedSeries extends Command
                 $firstEpisode->tvdbSeriesId,
                 $firstEpisode->season,
                 $firstEpisode->episode,
-                $firstEpisode->platform,
-                $firstEpisode->universe
+                $firstEpisode->platform
             );
 
             //Ingest the series

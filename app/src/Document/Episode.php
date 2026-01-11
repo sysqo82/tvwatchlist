@@ -94,10 +94,6 @@ class Episode
 
     #[Groups(['episode:read'])]
     #[ODM\Field(type: 'string')]
-    public string $universe;
-
-    #[Groups(['episode:read'])]
-    #[ODM\Field(type: 'string')]
     #[Assert\Choice(choices: self::AVAILABLE_PLATFORMS)]
     public string $platform;
 

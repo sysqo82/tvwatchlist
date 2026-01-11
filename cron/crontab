@@ -1,3 +1,5 @@
-0 */48 * * * /var/www/html/bin/console app:ingest-ongoing
-0 2 * * 0 /var/www/html/bin/console app:update-shows
-0 3 * * 0 /backup-db.sh
+# TV Watchlist App Cron Jobs
+# Ingest ongoing shows every 48 hours
+0 */48 * * * cd /var/www/html && /usr/local/bin/php /var/www/html/bin/console app:ingest-ongoing >> /var/log/cron.log 2>&1
+# Update shows every Sunday at 2 AM
+0 2 * * 0 cd /var/www/html && /usr/local/bin/php /var/www/html/bin/console app:update-shows >> /var/log/cron.log 2>&1

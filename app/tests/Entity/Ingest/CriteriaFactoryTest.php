@@ -5,6 +5,7 @@ namespace App\Tests\Entity\Ingest;
 use App\Entity\Ingest\CriteriaFactory;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,8 +16,8 @@ class CriteriaFactoryTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private CriteriaFactory $unit;
-    private RequestStack $requestStack;
-    private Request $request;
+    private RequestStack&MockInterface $requestStack;
+    private Request&MockInterface $request;
 
     public function setUp(): void
     {
@@ -58,7 +59,6 @@ class CriteriaFactoryTest extends TestCase
         $this->assertSame(1, $criteria->season);
         $this->assertSame(1, $criteria->episode);
         $this->assertSame('Plex', $criteria->platform);
-        $this->assertSame('', $criteria->universe);
     }
 
     public function testBuildFromRequestStackReturnsCriteriaWhenAllFieldsAreProvided(): void
@@ -68,7 +68,6 @@ class CriteriaFactoryTest extends TestCase
             'season' => 2,
             'episode' => 3,
             'platform' => 'platform',
-            'universe' => 'Universe',
         ]));
 
         $criteria = $this->unit->buildFromRequestStack($this->requestStack);
@@ -77,6 +76,5 @@ class CriteriaFactoryTest extends TestCase
         $this->assertSame(2, $criteria->season);
         $this->assertSame(3, $criteria->episode);
         $this->assertSame('platform', $criteria->platform);
-        $this->assertSame('universe', $criteria->universe);
     }
 }

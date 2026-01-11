@@ -84,8 +84,7 @@ class UpdateShowsCommand extends Command
                     $show->tvdbSeriesId,
                     $fromSeason,
                     $fromEpisode,
-                    $show->platform,
-                    $show->universe
+                    $show->platform
                 );
 
                 $result = $this->ingestProcessor->ingest($criteria);

@@ -51,7 +51,6 @@ class UpdateUnfinishedSeriesTest extends TestCase
         $episode->season = 2;
         $episode->episode = 1;
         $episode->platform = 'platform';
-        $episode->universe = 'universe';
 
         $this->episodeRepository->expects('getFirstEpisodeForSeries')
             ->with('seriesId')
@@ -64,7 +63,6 @@ class UpdateUnfinishedSeriesTest extends TestCase
                     $this->assertEquals(2, $criteria->season);
                     $this->assertEquals(1, $criteria->episode);
                     $this->assertEquals('platform', $criteria->platform);
-                    $this->assertEquals('universe', $criteria->universe);
                     return true;
                 })
             );

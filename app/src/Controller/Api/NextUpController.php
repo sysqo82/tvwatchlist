@@ -31,7 +31,6 @@ class NextUpController extends AbstractController
                 'title' => $show->title,
                 'poster' => $show->poster,
                 'platform' => $show->platform,
-                'universe' => $show->universe,
                 'hasEpisodes' => false,
                 'addedAt' => $show->addedAt->format('Y-m-d H:i:s'),
                 'lastChecked' => $show->lastChecked->format('Y-m-d H:i:s')
@@ -50,7 +49,6 @@ class NextUpController extends AbstractController
                 'poster' => $movie->poster,
                 'description' => $movie->description,
                 'platform' => $movie->platform,
-                'universe' => $movie->universe,
                 'releaseDate' => $movie->releaseDate?->format('Y-m-d'),
                 'runtime' => $movie->runtime,
                 'addedAt' => $movie->addedAt?->format('Y-m-d H:i:s') ?? (new \DateTimeImmutable())->format('Y-m-d H:i:s'),

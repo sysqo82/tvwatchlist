@@ -36,10 +36,6 @@ class ArchivedSeries
 
     #[Groups(['archived_series:read'])]
     #[ODM\Field(type: 'string')]
-    public ?string $universe = null;
-
-    #[Groups(['archived_series:read'])]
-    #[ODM\Field(type: 'string')]
     public ?string $platform = null;
 
     #[Groups(['archived_series:read'])]

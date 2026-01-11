@@ -36,10 +36,6 @@ class ArchivedMovie
 
     #[Groups(['archived_movie:read'])]
     #[ODM\Field(type: 'string')]
-    public ?string $universe = null;
-
-    #[Groups(['archived_movie:read'])]
-    #[ODM\Field(type: 'string')]
     public ?string $platform = null;
 
     #[Groups(['archived_movie:read'])]

@@ -25,13 +25,12 @@ readonly class CriteriaFactory
             $requestBody['seriesId'],
             $requestBody['season'] ?? 1,
             $requestBody['episode'] ?? 1,
-            $requestBody['platform'] ?? 'Plex',
-            strtolower($requestBody['universe'] ?? '')
+            $requestBody['platform'] ?? 'Plex'
         );
     }
 
-    public function build(string $seriesId, int $season, int $episode, string $platform, string $universe): Criteria
+    public function build(string $seriesId, int $season, int $episode, string $platform): Criteria
     {
-        return new Criteria($seriesId, $season, $episode, $platform, $universe);
+        return new Criteria($seriesId, $season, $episode, $platform);
     }
 }

@@ -48,7 +48,6 @@ class ArchivedSeries
         $archivedSeries->seriesTitle = $firstEpisode->seriesTitle;
         $archivedSeries->tvdbSeriesId = $tvdbSeriesId;
         $archivedSeries->poster = $firstEpisode->poster;
-        $archivedSeries->universe = $firstEpisode->universe ?? null;
         $archivedSeries->platform = $firstEpisode->platform ?? null;
         $archivedSeries->totalEpisodes = $totalEpisodes;
         $archivedSeries->watchedEpisodes = $watchedEpisodes;
@@ -87,7 +86,6 @@ class ArchivedSeries
                 'tvdbSeriesId' => $archivedSeries->tvdbSeriesId,
                 'seriesTitle' => $archivedSeries->seriesTitle,
                 'platform' => $archivedSeries->platform,
-                'universe' => $archivedSeries->universe,
                 'poster' => $archivedSeries->poster,
                 'overview' => $archivedSeries->overview,
                 'network' => $archivedSeries->network,

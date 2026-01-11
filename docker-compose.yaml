@@ -17,8 +17,7 @@ services:
       - app-network
     expose:
       - "9000"
-    # Ensure php-fpm is the command
-    command: ["php-fpm", "-F", "-R"]
+    command: ["php-fpm", "-F"]
 
   nginx:
     container_name: tvwatchlist-nginx
@@ -36,7 +35,10 @@ services:
 
   database:
     container_name: database
-    image: mongo:7
+    build:
+      context: .
+      dockerfile: ./docker/mongodb/Dockerfile
+    image: tvwatchlist-mongodb:local
     restart: always
     environment:
       MONGO_INITDB_DATABASE: api
@@ -49,7 +51,6 @@ services:
       - app-network
     ports:
       - "27017:27017"
-    command: ["mongod", "--auth", "--bind_ip_all"]
 
 volumes:
   db_data: {}

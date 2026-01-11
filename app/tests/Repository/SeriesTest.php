@@ -157,15 +157,11 @@ class SeriesTest extends TestCase
             ['seriesTitle' => 'series9'],
             ['seriesTitle' => 'series10'],
         ]);
+        $matchStage->expects('match')->andReturnSelf();
         $matchStage->expects('field')->with('seriesTitle')->andReturnSelf();
         $matchStage->expects('notIn')
             ->with(['series6', 'series7', 'series8', 'series9', 'series10'])
             ->andReturnSelf();
-
-        // $builder->match()->field('universe')->equals('')
-        $matchStage->expects('match')->twice()->andReturnSelf();
-        $matchStage->expects('field')->with('universe')->andReturnSelf();
-        $matchStage->expects('equals')->with('')->andReturnSelf();
 
         // $builder->group()->field('id')->expression('$seriesTitle');
         $group = Mockery::mock(Stage\Group::class);
@@ -191,34 +187,9 @@ class SeriesTest extends TestCase
      */
     public function testGetUniverses(array $expected, array $aggregationResult): void
     {
-        // $builder->match()->field('watched')->equals(false)
-        $matchStage = Mockery::mock(Stage\MatchStage::class);
-        $this->aggregationBuilder->expects('match')->andReturn($matchStage);
-        $matchStage->expects('field')->with('watched')->andReturnSelf();
-        $matchStage->expects('equals')->with(false)->andReturnSelf();
-
-        // $builder->match()->field('universe')->notEqual('')
-        $matchStage->expects('match')->andReturnSelf();
-        $matchStage->expects('field')->with('universe')->andReturnSelf();
-        $matchStage->expects('notEqual')->with('')->andReturnSelf();
-
-        // $builder->group()->field('id')->expression('$universe');
-        $group = Mockery::mock(Stage\Group::class);
-        $matchStage->expects('group')->andReturn($group);
-        $group->expects('field')->with('id')->andReturnSelf();
-        $group->expects('expression')->with('$universe');
-
-        // $builder->getAggregation()->getIterator()->toArray()
-        $aggregationMock = Mockery::mock(Aggregation::class);
-        $this->aggregationBuilder->expects('getAggregation')->andReturn($aggregationMock);
-
-        $iteratorMock = Mockery::mock(Iterator::class);
-        $aggregationMock->expects('getIterator')->andReturn($iteratorMock);
-
-        $iteratorMock->expects('toArray')->andReturn($aggregationResult);
-
+        // Universe methods now return empty arrays
         $this->assertSame(
-            $expected,
+            [],
             $this->unit->getUniverses()
         );
     }
@@ -248,35 +219,9 @@ class SeriesTest extends TestCase
      */
     public function testGetLatestTitleFromUniverse(string $expected, array $aggregationResult): void
     {
-        // $builder->match()->field('watched')->equals(false)
-        $matchStage = Mockery::mock(Stage\MatchStage::class);
-        $this->aggregationBuilder->expects('match')->andReturn($matchStage);
-        $matchStage->expects('field')->with('watched')->andReturnSelf();
-        $matchStage->expects('equals')->with(false)->andReturnSelf();
-
-        // $builder->match()->field('universe')->equals('universe')
-        $matchStage->expects('match')->andReturnSelf();
-        $matchStage->expects('field')->with('universe')->andReturnSelf();
-        $matchStage->expects('equals')->with('universe')->andReturnSelf();
-
-        // $builder->sort('airDate', 'ASC')->limit(1)
-        $sortStage = Mockery::mock(Stage\Sort::class);
-        $matchStage->expects('sort')->with('airDate', 'ASC')->andReturn($sortStage);
-        $stage = Mockery::mock(Stage::class);
-        $sortStage->expects('limit')->with(1)->andReturn($stage);
-
-        // $builder->getAggregation()->getIterator()->toArray()
-        $aggregationMock = Mockery::mock(Aggregation::class);
-        $this->aggregationBuilder->expects('getAggregation')->andReturn($aggregationMock);
-
-        $iteratorMock = Mockery::mock(Iterator::class);
-        $aggregationMock->expects('getIterator')->andReturn($iteratorMock);
-
-
-        $iteratorMock->expects('toArray')->andReturn($aggregationResult);
-
+        // Universe methods now return empty strings
         $this->assertSame(
-            $expected,
+            '',
             $this->unit->getLatestTitleFromUniverse('universe')
         );
     }

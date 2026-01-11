@@ -60,8 +60,7 @@ class ArchiveController extends AbstractController
                 $tvdbSeriesId,
                 1, // Start from season 1
                 1, // Start from episode 1
-                $archivedSeries['platform'] ?? 'Plex',
-                $archivedSeries['universe'] ?? ''
+                $archivedSeries['platform'] ?? 'Plex'
             );
 
             $ingestProcessor->ingest($criteria);

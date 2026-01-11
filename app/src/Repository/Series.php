@@ -47,7 +47,6 @@ class Series
         $builder = $this->documentManager->createAggregationBuilder(Episode::class);
         $builder->match()->field('watched')->equals(false)
             ->match()->field('seriesTitle')->notIn($this->getTitlesRecentlyWatched())
-            ->match()->field('universe')->equals('')
             ->group()->field('id')->expression('$seriesTitle');
 
         $seriesList = [];
@@ -60,28 +59,12 @@ class Series
 
     public function getUniverses(): array
     {
-        $builder = $this->documentManager->createAggregationBuilder(Episode::class);
-        $builder->match()->field('watched')->equals(false)
-            ->match()->field('universe')->notEqual('')
-            ->group()->field('id')->expression('$universe');
-
-        $universeList = [];
-        foreach ($builder->getAggregation()->getIterator()->toArray() as $universe) {
-            $universeList[] = $universe['_id'];
-        }
-
-        return $universeList;
+        return [];
     }
 
     public function getLatestTitleFromUniverse(string $universe): string
     {
-        $builder = $this->documentManager->createAggregationBuilder(EpisodeDocument::class);
-        $builder->match()->field('watched')->equals(false)
-            ->match()->field('universe')->equals($universe)
-            ->sort('airDate', 'ASC')
-            ->limit(1);
-
-        return $builder->getAggregation()->getIterator()->toArray()[0]['seriesTitle'] ?? '';
+        return '';
     }
 
     public function getUnfinishedSeriesTitles(): array

@@ -32,9 +32,6 @@ class Movie
     #[MongoDB\Field(type: 'string')]
     public string $platform;
 
-    #[MongoDB\Field(type: 'string')]
-    public string $universe;
-
     #[MongoDB\Field(type: 'date_immutable', nullable: true)]
     public ?DateTimeImmutable $addedAt = null;
 

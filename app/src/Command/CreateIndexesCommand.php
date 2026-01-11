@@ -58,10 +58,6 @@ class CreateIndexesCommand extends Command
             $movieCollection->createIndex(['title' => 1]);
             $io->success('Created index on Movie.title field');
 
-            // Index for platform and universe
-            $movieCollection->createIndex(['platform' => 1, 'universe' => 1]);
-            $io->success('Created compound index on Movie.platform, universe');
-
             $io->success('All database indexes created successfully!');
         } catch (\Exception $e) {
             $io->error('Failed to create indexes: ' . $e->getMessage());

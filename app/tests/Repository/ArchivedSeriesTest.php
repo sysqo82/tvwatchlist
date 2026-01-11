@@ -67,7 +67,6 @@ class ArchivedSeriesTest extends TestCase
         $episode->seriesTitle = 'Test Series';
         $episode->tvdbSeriesId = '12345';
         $episode->poster = 'poster.jpg';
-        $episode->universe = 'MCU';
         $episode->platform = 'Disney+';
 
         // Mock episode query
@@ -200,7 +199,6 @@ class ArchivedSeriesTest extends TestCase
         $archivedSeries->tvdbSeriesId = '12345';
         $archivedSeries->seriesTitle = 'Test Series';
         $archivedSeries->platform = 'Netflix';
-        $archivedSeries->universe = 'MCU';
         $archivedSeries->poster = 'poster.jpg';
         $archivedSeries->overview = 'Test overview';
         $archivedSeries->network = 'Network';
@@ -230,7 +228,6 @@ class ArchivedSeriesTest extends TestCase
         $this->assertEquals('12345', $result['tvdbSeriesId']);
         $this->assertEquals('Test Series', $result['seriesTitle']);
         $this->assertEquals('Netflix', $result['platform']);
-        $this->assertEquals('MCU', $result['universe']);
         $this->assertEquals(10, $result['totalEpisodes']);
         $this->assertEquals(5, $result['watchedEpisodes']);
     }

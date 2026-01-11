@@ -36,12 +36,20 @@ COPY --from=composer:2.5 /usr/bin/composer /usr/bin/composer
 RUN mkdir -p /root/.composer
 
 COPY app /var/www/html
-RUN composer install --prefer-dist --no-progress --no-suggest -o --no-interaction --ignore-platform-reqs
+RUN find /var/www/html/bin -type f -exec sed -i 's/\r$//' {} \; \
+    && chmod +x /var/www/html/bin/console \
+    && composer install --prefer-dist --no-progress --no-suggest -o --no-interaction --ignore-platform-reqs
 
 COPY cron/crontab /etc/cron.d/tvwatchlist
 RUN chmod 0644 /etc/cron.d/tvwatchlist \
-    && crontab /etc/cron.d/tvwatchlist
+    && crontab /etc/cron.d/tvwatchlist \
+    && touch /var/log/cron.log
+
+COPY docker/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh \
+    && sed -i 's/\r$//' /docker-entrypoint.sh
 
 VOLUME /var/www/html
 
+ENTRYPOINT ["/bin/sh", "/docker-entrypoint.sh"]
 CMD ["php-fpm"]

@@ -29,9 +29,6 @@ class Show
     #[MongoDB\Field(type: 'string')]
     public string $platform;
 
-    #[MongoDB\Field(type: 'string')]
-    public string $universe;
-
     #[MongoDB\Field(type: 'date_immutable')]
     public DateTimeImmutable $addedAt;
 
