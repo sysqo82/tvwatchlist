@@ -34,3 +34,6 @@ yarn-error.log
 
 ### phplint ###
 /.phplint.cache
+
+### backups ###
+/var/backups/
