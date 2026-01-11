@@ -278,7 +278,7 @@ export default function Archive() {
                                             
                                             <div className="mb-2">
                                                 <small className="text-light me-3">
-                                                    📅 Archived: {new Date(series.archivedAt).toLocaleDateString()}
+                                                    📅 Archived: {new Date(series.archivedAt).toLocaleDateString('en-GB')}
                                                 </small>
                                             </div>
 

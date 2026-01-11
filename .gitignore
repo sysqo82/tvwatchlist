@@ -2,7 +2,11 @@ node_modules
 package-lock.json
 .idea
 .phpunit.cache
+.vscode
 
 # Local Netlify folder
 .netlify
 .env
+
+# Database backups (local only)
+backups/
