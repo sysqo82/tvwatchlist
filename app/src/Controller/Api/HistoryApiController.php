@@ -63,10 +63,22 @@ class HistoryApiController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['seriesTitle']) || !isset($data['episodeTitle']) || 
-            !isset($data['season']) || !isset($data['episode'])) {
+        if (!$data) {
             return $this->json(
-                ['error' => 'Missing required fields'], 
+                ['error' => 'Invalid JSON'], 
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $missingFields = [];
+        if (!isset($data['seriesTitle'])) $missingFields[] = 'seriesTitle';
+        if (!isset($data['episodeTitle'])) $missingFields[] = 'episodeTitle';
+        if (!isset($data['season'])) $missingFields[] = 'season';
+        if (!isset($data['episode'])) $missingFields[] = 'episode';
+
+        if (!empty($missingFields)) {
+            return $this->json(
+                ['error' => 'Missing required fields: ' . implode(', ', $missingFields)], 
                 Response::HTTP_BAD_REQUEST
             );
         }
