@@ -29,7 +29,7 @@ class EpisodeController extends AbstractController
         }
 
         return $this->json([
-            'id' => $episode->id,
+            'id' => $episode->getId(),
             'seriesTitle' => $episode->seriesTitle,
             'title' => $episode->title,
             'description' => $episode->description,
@@ -38,7 +38,6 @@ class EpisodeController extends AbstractController
             'airDate' => $episode->airDate,
             'watched' => $episode->watched,
             'platform' => $episode->platform,
-            'network' => $episode->network ?? null,
         ]);
     }
 
@@ -50,7 +49,7 @@ class EpisodeController extends AbstractController
 
         $data = array_map(function ($episode) {
             return [
-                'id' => $episode->id,
+                'id' => $episode->getId(),
                 'seriesTitle' => $episode->seriesTitle,
                 'title' => $episode->title,
                 'description' => $episode->description,
@@ -59,7 +58,6 @@ class EpisodeController extends AbstractController
                 'airDate' => $episode->airDate,
                 'watched' => $episode->watched,
                 'platform' => $episode->platform,
-                'network' => $episode->network ?? null,
             ];
         }, $episodes);
 
@@ -88,7 +86,7 @@ class EpisodeController extends AbstractController
         $this->documentManager->flush();
 
         return $this->json([
-            'id' => $episode->id,
+            'id' => $episode->getId(),
             'seriesTitle' => $episode->seriesTitle,
             'title' => $episode->title,
             'watched' => $episode->watched,

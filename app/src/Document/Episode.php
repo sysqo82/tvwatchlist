@@ -49,11 +49,7 @@ class Episode
     #[Assert\NotBlank]
     public string $tvdbEpisodeId;
 
-    #[Groups(['episode:read'])]
     #[ODM\Field(type: 'string')]
-    #[Assert\NotBlank]
-    public string $seriesTitle;
-ODM\Field(type: 'string')]
     #[Assert\NotBlank]
     public string $seriesTitle;
 
@@ -76,6 +72,10 @@ ODM\Field(type: 'string')]
     #[ODM\Field(type: 'date')]
     public ?DateTimeInterface $airDate;
 
+    #[ODM\Field(type: 'bool')]
+    public bool $watched = false;
+
+    public function getId(): int
     {
         return $this->id;
     }
