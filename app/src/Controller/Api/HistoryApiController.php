@@ -89,6 +89,23 @@ class HistoryApiController extends AbstractController
         $history->season = (int) $data['season'];
         $history->episode = (int) $data['episode'];
         $history->watchedAt = new \DateTimeImmutable();
+        
+        // Optional fields that frontend may provide
+        if (isset($data['tvdbSeriesId'])) {
+            $history->tvdbSeriesId = $data['tvdbSeriesId'];
+        }
+        if (isset($data['episodeDescription'])) {
+            $history->episodeDescription = $data['episodeDescription'];
+        }
+        if (isset($data['poster'])) {
+            $history->poster = $data['poster'];
+        }
+        if (isset($data['episodeId'])) {
+            $history->episodeId = $data['episodeId'];
+        }
+        if (isset($data['airDate'])) {
+            $history->airDate = new \DateTimeImmutable($data['airDate']);
+        }
 
         $this->documentManager->persist($history);
         $this->documentManager->flush();
