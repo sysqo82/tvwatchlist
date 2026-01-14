@@ -104,7 +104,7 @@ class HistoryApiController extends AbstractController
     }
 
     #[Route('/api/histories/{id}', name: 'api_history_delete', methods: ['DELETE'])]
-    public function deleteHistory(string $id): Response
+    public function deleteHistory(int $id): Response
     {
         $history = $this->documentManager->getRepository(History::class)->find($id);
 

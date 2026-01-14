@@ -20,7 +20,7 @@ class EpisodeController extends AbstractController
     }
 
     #[Route('/api/episodes/{id}', name: 'api_episode_get', methods: ['GET'])]
-    public function getEpisode(string $id): JsonResponse
+    public function getEpisode(int $id): JsonResponse
     {
         $episode = $this->documentManager->getRepository(Episode::class)->find($id);
         
@@ -65,7 +65,7 @@ class EpisodeController extends AbstractController
     }
 
     #[Route('/api/episodes/{id}', name: 'api_episode_patch', methods: ['PATCH'])]
-    public function updateEpisode(string $id, Request $request): JsonResponse
+    public function updateEpisode(int $id, Request $request): JsonResponse
     {
         $episode = $this->documentManager->getRepository(Episode::class)->find($id);
         
@@ -95,7 +95,7 @@ class EpisodeController extends AbstractController
     }
 
     #[Route('/api/episodes/{id}', name: 'api_episode_delete', methods: ['DELETE'])]
-    public function deleteEpisode(string $id): JsonResponse
+    public function deleteEpisode(int $id): JsonResponse
     {
         $episode = $this->documentManager->getRepository(Episode::class)->find($id);
         
