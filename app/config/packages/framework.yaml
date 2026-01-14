@@ -18,6 +18,12 @@ framework:
     php_errors:
         log: true
     
+    # Enable router cache even in dev mode to fix RouterListener performance
+    router:
+        utf8: true
+        cache_dir: '%kernel.cache_dir%/routing'
+        strict_requirements: ~
+    
     # HTTP cache configuration - disabled to prevent stale data issues
     # Individual controllers set their own cache headers as needed
     #http_cache:

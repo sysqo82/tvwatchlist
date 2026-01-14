@@ -35,7 +35,7 @@ body{
   color:lightgrey;
   margin-top:10px;
   
-  // Remove focus outline on buttons
+  // Remove focus outline on buttons (keep border to prevent layout shift)
   button:focus,
   .btn:focus,
   button:focus-visible,
@@ -44,7 +44,6 @@ body{
   a:focus-visible {
     outline: none !important;
     box-shadow: none !important;
-    border: none;
   }
   
   img{

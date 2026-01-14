@@ -8,7 +8,7 @@ COPY cron/backup-db-internal.sh /backup-db-internal.sh
 RUN chmod +x /backup-db-internal.sh
 
 # Create cron job
-RUN echo '0 3 * * 0 /backup-db-internal.sh >> /var/log/cron.log 2>&1' > /etc/cron.d/database-backup \
+RUN echo '0 3 * * 1 /backup-db-internal.sh >> /var/log/cron.log 2>&1' > /etc/cron.d/database-backup \
     && chmod 0644 /etc/cron.d/database-backup \
     && crontab /etc/cron.d/database-backup \
     && touch /var/log/cron.log
