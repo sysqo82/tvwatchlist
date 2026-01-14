@@ -89,8 +89,15 @@ class EpisodeController extends AbstractController
             'id' => $episode->getId(),
             'seriesTitle' => $episode->seriesTitle,
             'title' => $episode->title,
+            'description' => $episode->description,
+            'season' => $episode->season,
+            'episode' => $episode->episode,
             'watched' => $episode->watched,
             'platform' => $episode->platform,
+            'airDate' => $episode->airDate?->format('Y-m-d'),
+            'poster' => $episode->poster,
+            'tvdbSeriesId' => $episode->tvdbSeriesId,
+            'tvdbEpisodeId' => $episode->tvdbEpisodeId,
         ]);
     }
 
