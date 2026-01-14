@@ -94,14 +94,14 @@ class HistoryApiController extends AbstractController
     #[Route('/api/histories/{id}', name: 'api_history_delete', methods: ['DELETE'])]
     public function deleteHistory(string $id): Response
     {
-        $history = $this->dm->getRepository(History::class)->find($id);
+        $history = $this->documentManager->getRepository(History::class)->find($id);
 
         if (!$history) {
             return $this->json(['error' => 'History not found'], Response::HTTP_NOT_FOUND);
         }
 
         // Find and update the episode to mark as unwatched
-        $episode = $this->dm->getRepository(\App\Document\Episode::class)->findOneBy([
+        $episode = $this->documentManager->getRepository(\App\Document\Episode::class)->findOneBy([
             'seriesTitle' => $history->seriesTitle,
             'season' => $history->season,
             'episode' => $history->episode,
@@ -109,12 +109,12 @@ class HistoryApiController extends AbstractController
 
         if ($episode) {
             $episode->watched = false;
-            $this->dm->persist($episode);
+            $this->documentManager->persist($episode);
         }
 
         // Delete the history record
-        $this->dm->remove($history);
-        $this->dm->flush();
+        $this->documentManager->remove($history);
+        $this->documentManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
