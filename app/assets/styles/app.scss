@@ -346,3 +346,26 @@ body{
     }
   }
 }
+
+// Hide Symfony debug toolbar loading flash
+.sf-toolbar-status,
+.sf-toolbar-clearer,
+#sfToolbarClearer-f10b0b,
+div[id^="sfToolbar"][class*="sf-toolbar-opened"]:not(:has(.sf-toolbar-block)),
+.sf-minitoolbar-loading {
+  display: none !important;
+}
+
+// Only show toolbar when fully loaded
+#sfToolbar.sf-toolbar-opened {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

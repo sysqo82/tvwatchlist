@@ -29,7 +29,7 @@
         "watch": "encore dev --watch",
         "build": "encore production --progress",
         "webpack": "encore dev --progress",
-        "clear-cache": "cd app && docker-compose run --rm app"
+        "clear-cache": "cd \"d:/D backup/My Documents/projects/tvwatchlist\" && docker compose exec app bin/console cache:clear"
     },
     "dependencies": {
         "process": "^0.11.10",
