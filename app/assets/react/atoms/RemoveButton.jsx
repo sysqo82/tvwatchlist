@@ -28,7 +28,7 @@ export default function RemoveButton({id, refreshState, size = "lg", variant = "
         });
     };
 
-    const buttonText = type === 'movie' ? 'Remove Movie' : 'Remove Series';
+    const buttonText = type === 'movie' ? 'Archive Film' : 'Archive Series';
 
     return (
         <div className="component text-center" id="remove">

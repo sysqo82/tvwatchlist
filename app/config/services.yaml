@@ -45,15 +45,6 @@ services:
         arguments:
             $requestStack: '@request_stack'
 
-    App\Swagger\SwaggerDecorator:
-        decorates: 'api_platform.openapi.normalizer'
-        arguments:
-          [
-              '@App\Swagger\SwaggerDecorator.inner',
-              '%kernel.project_dir%/config/services/swagger.yaml',
-          ]
-        autoconfigure: false
-
     Symfony\Component\Yaml\Parser: ~
 
     # Archive related repositories

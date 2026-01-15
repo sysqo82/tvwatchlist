@@ -49,10 +49,6 @@ export default function WatchedButton({id, refreshState, size = "lg", className 
                     throw new Error(`Failed to create History entry: ${response.status}`);
                 }
                 return response.json();
-            })
-            .then((history) => {
-                console.log(`Successfully created History entry for episode ${episode.id}:`, history);
-                return history;
             });
         })
         .catch((error) => {
