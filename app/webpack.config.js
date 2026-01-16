@@ -1,6 +1,6 @@
 const Encore = require('@symfony/webpack-encore');
 const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
-const glob = require('glob-all');
+const { glob } = require('glob');
 const path = require('path');
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
@@ -109,11 +109,11 @@ Encore
 // Add PurgeCSS in production to remove unused CSS
 if (Encore.isProduction()) {
     Encore.addPlugin(new PurgeCSSPlugin({
-        paths: glob.sync([
-            path.join(__dirname, 'templates/**/*.html.twig'),
-            path.join(__dirname, 'assets/**/*.jsx'),
-            path.join(__dirname, 'assets/**/*.js')
-        ]),
+        paths: () => [
+            ...glob.sync(path.join(__dirname, 'templates/**/*.html.twig')),
+            ...glob.sync(path.join(__dirname, 'assets/**/*.jsx')),
+            ...glob.sync(path.join(__dirname, 'assets/**/*.js'))
+        ],
         safelist: {
             standard: [
                 /^modal/,
