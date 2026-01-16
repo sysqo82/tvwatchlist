@@ -12,6 +12,7 @@
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
+.phpcs-cache
 ###< friendsofphp/php-cs-fixer ###
 
 ###> symfony/webpack-encore-bundle ###
