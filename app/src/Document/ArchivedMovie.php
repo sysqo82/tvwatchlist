@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Document;
 
 use DateTimeInterface;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ODM\Document]

@@ -17,7 +17,7 @@ class SeriesTitleFactory
     {
         $request = $requestStack->getCurrentRequest() ?? throw new BadRequestException('No request found');
 
-        $searchTerm = $request->get('seriesTitle');
+        $searchTerm = $request->query->get('seriesTitle');
         if ($searchTerm === null) {
             throw new BadRequestException('No series title provided');
         }

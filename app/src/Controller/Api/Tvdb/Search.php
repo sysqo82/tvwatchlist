@@ -9,7 +9,7 @@ use App\Entity\Api\Tvdb\Response\SeriesFactory;
 use App\Entity\Api\Tvdb\Search as SearchEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class Search extends AbstractController
 {

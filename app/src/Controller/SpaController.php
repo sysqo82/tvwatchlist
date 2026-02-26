@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class SpaController
 {
@@ -14,11 +14,11 @@ class SpaController
     {
         $manifestPath = __DIR__ . '/../../public/build/manifest.json';
         $manifest = json_decode(file_get_contents($manifestPath), true);
-        
+
         $cssFile = $manifest['build/app.css'] ?? '/build/app.css';
         $runtimeJs = $manifest['build/runtime.js'] ?? '/build/runtime.js';
         $appJs = $manifest['build/app.js'] ?? '/build/app.js';
-        
+
         // Find the vendor chunk (451.*.js or similar)
         $vendorJs = '';
         foreach ($manifest as $key => $value) {
@@ -27,9 +27,9 @@ class SpaController
                 break;
             }
         }
-        
+
         $vendorScript = $vendorJs ? "<script src=\"{$vendorJs}\"></script>" : '';
-        
+
         $html = <<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +59,7 @@ class SpaController
 </body>
 </html>
 HTML;
-        
+
         return new Response($html);
     }
 }

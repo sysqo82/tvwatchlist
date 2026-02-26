@@ -5,6 +5,7 @@ namespace App\Tests\Api;
 use App\Api\TvdbAuthClient;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -16,7 +17,7 @@ class TvdbAuthClientTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private TvdbAuthClient $unit;
-    private HttpClientInterface $client;
+    private HttpClientInterface&MockInterface $client;
 
     public function setUp(): void
     {

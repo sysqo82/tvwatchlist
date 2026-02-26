@@ -7,7 +7,7 @@ namespace App\Controller\Api;
 use App\Api\TvdbQueryClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class SeriesController extends AbstractController
 {
