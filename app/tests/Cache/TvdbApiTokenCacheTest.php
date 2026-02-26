@@ -6,6 +6,7 @@ use App\Api\TvdbAuthClient;
 use App\Cache\TvdbApiTokenCache;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -17,8 +18,8 @@ class TvdbApiTokenCacheTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private TvdbApiTokenCache $unit;
-    private CacheInterface $cache;
-    private TvdbAuthClient $tvdbClient;
+    private CacheInterface&MockInterface $cache;
+    private TvdbAuthClient&MockInterface $tvdbClient;
 
 
     public function setUp(): void

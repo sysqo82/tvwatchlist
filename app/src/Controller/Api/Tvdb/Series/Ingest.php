@@ -8,7 +8,7 @@ use App\Entity\Ingest\Criteria;
 use App\Processor\Ingest as IngestProcessor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class Ingest extends AbstractController
 {

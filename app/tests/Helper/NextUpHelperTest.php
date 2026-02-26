@@ -7,6 +7,7 @@ use App\Repository\Episode;
 use App\Repository\Series;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 
 class NextUpHelperTest extends TestCase
@@ -14,7 +15,7 @@ class NextUpHelperTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private NextUpHelper $unit;
-    private Series $series;
+    private Series&MockInterface $series;
     public function setUp(): void
     {
         $this->series = Mockery::mock(Series::class);
@@ -78,59 +79,59 @@ class NextUpHelperTest extends TestCase
     {
         return [
             'empty' => [
-                'recentlyWatched' => [],
+                'watched' => [],
                 'expected' => '',
             ],
             'one item in list' => [
-                'recentlyWatched' => ['show1'],
+                'watched' => ['show1'],
                 'expected' => 'show1',
             ],
             'only two items in list' => [
-                'recentlyWatched' => ['show1', 'show2'],
+                'watched' => ['show1', 'show2'],
                 'expected' => 'show2',
             ],
             'two same items in list' => [
-                'recentlyWatched' => ['show1', 'show1'],
+                'watched' => ['show1', 'show1'],
                 'expected' => 'show1',
             ],
             'two items but one is not in watchable list' => [
-                'recentlyWatched' => ['show1', 'show6'],
+                'watched' => ['show1', 'show6'],
                 'expected' => 'show1',
             ],
             'three unique items' => [
-                'recentlyWatched' => ['show1', 'show2', 'show3'],
+                'watched' => ['show1', 'show2', 'show3'],
                 'expected' => 'show3',
             ],
             'four items, two shows, equal spread' => [
-                'recentlyWatched' => ['show4', 'show2', 'show2', 'show4'],
+                'watched' => ['show4', 'show2', 'show2', 'show4'],
                 'expected' => 'show2',
             ],
             'four items, two shows, three of one, one of one' => [
-                'recentlyWatched' => ['show4', 'show2', 'show4', 'show4'],
+                'watched' => ['show4', 'show2', 'show4', 'show4'],
                 'expected' => 'show2',
             ],
             'four items, three shows' => [
-                'recentlyWatched' => ['show4', 'show2', 'show3', 'show4'],
+                'watched' => ['show4', 'show2', 'show3', 'show4'],
                 'expected' => 'show3',
             ],
             'five items, four shows' => [
-                'recentlyWatched' => ['show5', 'show2', 'show3', 'show4', 'show5'],
+                'watched' => ['show5', 'show2', 'show3', 'show4', 'show5'],
                 'expected' => 'show4',
             ],
             'five items, two shows' => [
-                'recentlyWatched' => ['show1', 'show2', 'show2', 'show2', 'show1'],
+                'watched' => ['show1', 'show2', 'show2', 'show2', 'show1'],
                 'expected' => 'show2',
             ],
             'five items, three shows, evenly spread' => [
-                'recentlyWatched' => ['show1', 'show2', 'show3', 'show1', 'show2'],
+                'watched' => ['show1', 'show2', 'show3', 'show1', 'show2'],
                 'expected' => 'show3',
             ],
             'five items, three shows, awkwardly spread' => [
-                'recentlyWatched' => ['show1', 'show3', 'show2', 'show2', 'show2'],
+                'watched' => ['show1', 'show3', 'show2', 'show2', 'show2'],
                 'expected' => 'show2',
             ],
             'five items, three shows, 1-3-2-3-2' => [
-                'recentlyWatched' => ['show1', 'show3', 'show2', 'show3', 'show2'],
+                'watched' => ['show1', 'show3', 'show2', 'show3', 'show2'],
                 'expected' => 'show2',
             ]
         ];

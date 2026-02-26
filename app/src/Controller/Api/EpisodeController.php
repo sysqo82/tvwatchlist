@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class EpisodeController extends AbstractController
 {
@@ -23,7 +23,7 @@ class EpisodeController extends AbstractController
     public function getEpisode(int $id): JsonResponse
     {
         $episode = $this->documentManager->getRepository(Episode::class)->find($id);
-        
+
         if (!$episode) {
             return $this->json(['error' => 'Episode not found'], Response::HTTP_NOT_FOUND);
         }
@@ -68,7 +68,7 @@ class EpisodeController extends AbstractController
     public function updateEpisode(int $id, Request $request): JsonResponse
     {
         $episode = $this->documentManager->getRepository(Episode::class)->find($id);
-        
+
         if (!$episode) {
             return $this->json(['error' => 'Episode not found'], Response::HTTP_NOT_FOUND);
         }
@@ -105,7 +105,7 @@ class EpisodeController extends AbstractController
     public function deleteEpisode(int $id): JsonResponse
     {
         $episode = $this->documentManager->getRepository(Episode::class)->find($id);
-        
+
         if (!$episode) {
             return $this->json(['error' => 'Episode not found'], Response::HTTP_NOT_FOUND);
         }

@@ -17,7 +17,7 @@ class MovieTitleFactory
     {
         $request = $requestStack->getCurrentRequest() ?? throw new BadRequestException('No request found');
 
-        $searchTerm = $request->get('movieTitle');
+        $searchTerm = $request->query->get('movieTitle');
         if ($searchTerm === null) {
             throw new BadRequestException('No movie title provided');
         }

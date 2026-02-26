@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Document;
 
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as MongoDB;
 
 #[MongoDB\Document(collection: 'Show')]
 #[MongoDB\Index(keys: ['tvdbSeriesId' => 'asc'], options: ['unique' => true])]
