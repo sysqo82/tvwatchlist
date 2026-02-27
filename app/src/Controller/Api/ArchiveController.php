@@ -8,6 +8,8 @@ use App\Repository\ArchivedMovie;
 use App\Repository\ArchivedSeries;
 use App\Processor\Ingest;
 use App\Entity\Ingest\Criteria;
+use App\Document\Episode;
+use App\Document\History;
 use App\Document\Movie;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,6 +67,28 @@ class ArchiveController extends AbstractController
 
             $ingestProcessor->ingest($criteria);
 
+            // Clear the ODM identity map populated by ingest() so that findOneBy()
+            // fetches fresh documents from MongoDB instead of returning stale objects.
+            $documentManager->clear();
+
+            $watchedEpisodesList = $archivedSeries['watchedEpisodesList'] ?? [];
+
+            foreach ($watchedEpisodesList as $watchedCoords) {
+                $episode = $documentManager->getRepository(Episode::class)->findOneBy([
+                    'tvdbSeriesId' => $tvdbSeriesId,
+                    'season'       => (int) $watchedCoords['season'],
+                    'episode'      => (int) $watchedCoords['episode'],
+                ]);
+                if ($episode !== null) {
+                    $episode->watched = true;
+                    $documentManager->persist($episode);
+                }
+            }
+
+            if (!empty($watchedEpisodesList)) {
+                $documentManager->flush();
+            }
+
             // Remove from archive after successful restore
             $restored = $archivedSeriesRepository->restoreSeriesFromArchive($tvdbSeriesId);
 
@@ -86,6 +110,14 @@ class ArchiveController extends AbstractController
             $deleted = $archivedSeriesRepository->permanentlyDeleteFromArchive($tvdbSeriesId);
 
             if ($deleted) {
+                // Delete all History entries for this series so they don't
+                // resurface in recently watched after permanent deletion.
+                $documentManager->createQueryBuilder(History::class)
+                    ->remove()
+                    ->field('tvdbSeriesId')->equals($tvdbSeriesId)
+                    ->getQuery()
+                    ->execute();
+
                 return new JsonResponse(['message' => 'Series permanently deleted'], Response::HTTP_OK);
             } else {
                 return new JsonResponse(['error' => 'Series not found in archive'], Response::HTTP_NOT_FOUND);

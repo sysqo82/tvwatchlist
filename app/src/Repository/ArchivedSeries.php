@@ -43,6 +43,20 @@ class ArchivedSeries
         $totalEpisodes = $this->countEpisodesByTvdbSeriesId($tvdbSeriesId);
         $watchedEpisodes = $this->countWatchedEpisodesByTvdbSeriesId($tvdbSeriesId);
 
+        // Collect the season/episode coordinates of every watched episode so the
+        // restore flow can mark them back as watched without relying on History.
+        $watchedEpisodesRaw = $this->documentManager->createQueryBuilder(EpisodeDocument::class)
+            ->field('tvdbSeriesId')->equals($tvdbSeriesId)
+            ->field('watched')->equals(true)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        $watchedEpisodesList = array_values(array_map(
+            static fn(EpisodeDocument $ep): array => ['season' => $ep->season, 'episode' => $ep->episode],
+            $watchedEpisodesRaw
+        ));
+
         // Create archived series record
         $archivedSeries = new ArchivedSeriesDocument();
         $archivedSeries->seriesTitle = $firstEpisode->seriesTitle;
@@ -51,6 +65,7 @@ class ArchivedSeries
         $archivedSeries->platform = $firstEpisode->platform ?? null;
         $archivedSeries->totalEpisodes = $totalEpisodes;
         $archivedSeries->watchedEpisodes = $watchedEpisodes;
+        $archivedSeries->watchedEpisodesList = $watchedEpisodesList;
 
         $this->documentManager->persist($archivedSeries);
         $this->documentManager->flush();
@@ -91,6 +106,7 @@ class ArchivedSeries
                 'network' => $archivedSeries->network,
                 'totalEpisodes' => $archivedSeries->totalEpisodes,
                 'watchedEpisodes' => $archivedSeries->watchedEpisodes,
+                'watchedEpisodesList' => $archivedSeries->watchedEpisodesList,
                 'archivedAt' => $archivedSeries->archivedAt,
                 'archiveReason' => $archivedSeries->archiveReason
             ];

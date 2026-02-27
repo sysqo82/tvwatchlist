@@ -17,6 +17,8 @@ export default function SeriesGroup({ seriesData, refreshState }) {
         episodes
     } = seriesData;
 
+    const unwatchedEpisodes = episodes.filter(ep => !ep.watched);
+
     const toggleExpanded = () => {
         setIsExpanded(!isExpanded);
     };
@@ -91,13 +93,15 @@ export default function SeriesGroup({ seriesData, refreshState }) {
                             )}
                         </div>
                         <div className="d-flex flex-column gap-2">
-                            <button 
-                                className="btn btn-sm btn-outline-light"
-                                onClick={toggleExpanded}
-                                type="button"
-                            >
-                                {isExpanded ? 'Collapse' : 'Expand'} ({episodes.length} episodes)
-                            </button>
+                            {unwatchedEpisodes.length > 0 && (
+                                <button 
+                                    className="btn btn-sm btn-outline-light"
+                                    onClick={toggleExpanded}
+                                    type="button"
+                                >
+                                    {isExpanded ? 'Collapse' : 'Expand'} ({unwatchedEpisodes.length} episodes)
+                                </button>
+                            )}
                             {needsRefresh && (
                                 <RefreshButton 
                                     tvdbSeriesId={tvdbSeriesId}
@@ -133,7 +137,7 @@ export default function SeriesGroup({ seriesData, refreshState }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {episodes.map((episode) => {
+                            {unwatchedEpisodes.map((episode) => {
                                 // Check if title is generic like "Episode 1", "Episode 2", etc.
                                 const isGenericTitle = /^Episode \d+$/i.test(episode.title);
                                 const displayTitle = isGenericTitle && episode.description 

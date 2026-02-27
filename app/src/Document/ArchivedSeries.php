@@ -54,6 +54,15 @@ class ArchivedSeries
     #[ODM\Field(type: 'int')]
     public int $watchedEpisodes = 0;
 
+    /**
+     * List of watched episode coordinates at archive time.
+     * Each entry: ['season' => int, 'episode' => int]
+     * Used on restore to mark those episodes as watched immediately,
+     * preventing duplicate History entries if the user re-watches them.
+     */
+    #[ODM\Field(type: 'collection')]
+    public array $watchedEpisodesList = [];
+
     #[Groups(['archived_series:read'])]
     #[ODM\Field(type: 'date')]
     #[Assert\NotNull]
