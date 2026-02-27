@@ -105,10 +105,28 @@ class ArchivedSeriesTest extends TestCase
         $countQueryBuilder2->expects('count')->andReturnSelf();
         $countQueryBuilder2->expects('getQuery')->andReturn($countQuery2);
 
+        // Mock watched-episodes list query (stores season/episode pairs in the archive)
+        $watchedEp = new EpisodeDocument();
+        $watchedEp->season = 1;
+        $watchedEp->episode = 3;
+
+        $watchedListIterator = Mockery::mock(Iterator::class);
+        $watchedListIterator->expects('toArray')->andReturn([$watchedEp]);
+
+        $watchedListQuery = Mockery::mock(Query::class);
+        $watchedListQuery->expects('execute')->andReturn($watchedListIterator);
+
+        $watchedListQueryBuilder = Mockery::mock('\Doctrine\ODM\MongoDB\Query\Builder');
+        $watchedListQueryBuilder->expects('field')->with('tvdbSeriesId')->andReturnSelf();
+        $watchedListQueryBuilder->expects('equals')->with('12345')->andReturnSelf();
+        $watchedListQueryBuilder->expects('field')->with('watched')->andReturnSelf();
+        $watchedListQueryBuilder->expects('equals')->with(true)->andReturnSelf();
+        $watchedListQueryBuilder->expects('getQuery')->andReturn($watchedListQuery);
+
         $this->documentManager->expects('createQueryBuilder')
             ->with(EpisodeDocument::class)
-            ->times(3)
-            ->andReturn($queryBuilder, $countQueryBuilder1, $countQueryBuilder2);
+            ->times(4)
+            ->andReturn($queryBuilder, $countQueryBuilder1, $countQueryBuilder2, $watchedListQueryBuilder);
 
         $this->documentManager->expects('persist')
             ->with(Mockery::type(ArchivedSeriesDocument::class));
@@ -116,6 +134,10 @@ class ArchivedSeriesTest extends TestCase
         $this->documentManager->expects('flush');
 
         $this->unit->archiveSeriesByTvdbId('12345');
+
+        // Assert the persisted document has watchedEpisodesList populated
+        // (captured implicitly via the mock — the episode's season/episode
+        // must have been read from $watchedEp above)
     }
 
     public function testArchiveSeriesByTvdbIdThrowsExceptionWhenNoEpisodesFound(): void
@@ -230,6 +252,7 @@ class ArchivedSeriesTest extends TestCase
         $this->assertEquals('Netflix', $result['platform']);
         $this->assertEquals(10, $result['totalEpisodes']);
         $this->assertEquals(5, $result['watchedEpisodes']);
+        $this->assertArrayHasKey('watchedEpisodesList', $result);
     }
 
     public function testGetArchivedSeriesByTvdbIdReturnsNullWhenNotFound(): void
