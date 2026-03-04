@@ -39,30 +39,15 @@ RUN set -xe; \
     mkdir ~/.composer;
 
 COPY app /var/www/html
-RUN composer install --prefer-dist --no-progress --no-suggest -o --no-interaction --ignore-platform-reqs
+RUN composer install --prefer-dist --no-progress --no-suggest -o --no-dev --no-interaction --ignore-platform-reqs \
+    && php bin/console cache:warmup --env=prod --no-debug
 
 COPY cron/crontab /etc/cron.d/tvwatchlist
 RUN chmod 0644 /etc/cron.d/tvwatchlist \
     && crontab /etc/cron.d/tvwatchlist
 
 COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint \
+    && chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]
-
-FROM node:18 as npm_builder
-
-WORKDIR /app
-COPY ../../app/package*.json ./
-COPY --from=build /var/www/html/vendor ./vendor
-
-RUN npm install --production=false
-
-COPY ../../app .
-
-RUN npm run build
-
-FROM build as final
-
-WORKDIR /var/www/html
-COPY --from=npm_builder /app/public/build ./public/build

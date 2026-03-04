@@ -9,6 +9,7 @@ export default function SeriesGroup({ seriesData, refreshState }) {
     const [network, setNetwork] = useState(null);
     const [networkLoading, setNetworkLoading] = useState(true);
     const [imageError, setImageError] = useState(false);
+    const [imgSrc, setImgSrc] = useState(null);
     
     const { 
         seriesTitle, 
@@ -52,9 +53,10 @@ export default function SeriesGroup({ seriesData, refreshState }) {
         }
     }, [tvdbSeriesId]);
 
-    // Reset image error state when poster changes
+    // Reset image state when poster changes
     useEffect(() => {
         setImageError(false);
+        setImgSrc(poster || null);
     }, [poster]);
 
     // Check if refresh is needed (missing poster, image error, fallback image, or overview)
@@ -66,17 +68,20 @@ export default function SeriesGroup({ seriesData, refreshState }) {
             <div className="d-flex align-items-start gap-2 mb-3">
                 {/* Series Poster */}
                 <div className="flex-shrink-0">
-                    <img 
-                        src={poster} 
-                        alt={seriesTitle}
-                        className="img-fluid series-poster"
-                        fetchpriority="high"
-                        onError={(e) => {
-                            e.target.onerror = null; // Prevent infinite loop
-                            e.target.src = '/build/images/fallback-image.png';
-                            setImageError(true); // Mark that image failed to load
-                        }}
-                    />
+                    {imgSrc ? (
+                        <img 
+                            src={imgSrc}
+                            alt={seriesTitle}
+                            className="img-fluid series-poster"
+                            fetchpriority="high"
+                            onError={() => {
+                                setImageError(true);
+                                setImgSrc('/build/images/fallback-image.png');
+                            }}
+                        />
+                    ) : (
+                        <div className="series-poster-placeholder" />
+                    )}
                 </div>
                 
                 {/* Series Info */}
