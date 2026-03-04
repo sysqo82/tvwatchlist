@@ -6,6 +6,8 @@
 parameters:
     env(MONGODB_URL): ''
     env(MONGODB_DB): ''
+    env(TVDB_APIKEY): ''
+    env(TVDB_PIN): ''
 
 services:
     # default configuration for services in *this* file

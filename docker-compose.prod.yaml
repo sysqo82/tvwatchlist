@@ -1,18 +1,18 @@
 services:
   app:
-    image: tvwatchlist-app:local
+    image: tvwatchlist-app:prod
     build:
       context: .
-      dockerfile: ./docker/php/Dockerfile.dev
-    container_name: watchlist-app
+      dockerfile: ./docker/php/Dockerfile.prod
+    container_name: watchlist-app-prod
     restart: always
     environment:
+      APP_ENV: prod
       OPCACHE_VALIDATE_TIMESTAMPS: 0
-      APP_ENV: dev
-      XDEBUG_MODE: "off"
+    env_file:
+      - ./app/.env.local
     volumes:
-      - ./app:/var/www/html:rw,cached
-      - ./cron:/cron:ro
+      - app_public:/var/www/html/public
     networks:
       - app-network
     expose:
@@ -20,14 +20,14 @@ services:
     command: ["php-fpm", "-F"]
 
   nginx:
-    container_name: tvwatchlist-nginx
+    container_name: tvwatchlist-nginx-prod
     image: nginx:stable-alpine
     restart: always
     ports:
-      - '${APP_PORT}:80'
+      - '${APP_PORT_PROD:-10001}:80'
     volumes:
-      - ./app/public:/var/www/html/public
-      - ./docker/nginx/conf.d/default.dev.conf:/etc/nginx/conf.d/default.conf
+      - app_public:/var/www/html/public
+      - ./docker/nginx/conf.d/default.prod.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
     networks:
@@ -54,6 +54,7 @@ services:
 
 volumes:
   db_data: {}
+  app_public: {}
 
 networks:
   app-network:

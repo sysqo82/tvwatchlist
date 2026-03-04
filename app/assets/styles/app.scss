@@ -309,6 +309,13 @@ body{
       height: auto;
       border-radius: 8px;
     }
+    .series-poster-placeholder {
+      width: 120px;
+      height: 178px; // approx 2:3 poster ratio
+      border-radius: 8px;
+      background-color: #2a2a2a;
+      flex-shrink: 0;
+    }
   }
 
   .series-group-archive {
