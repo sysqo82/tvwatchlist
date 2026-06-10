@@ -124,6 +124,14 @@ class ArchivedSeries
             ->toArray()[0] ?? null;
 
         if ($archivedSeries) {
+            // Delete all episodes for this archived series
+            $this->documentManager->createQueryBuilder(EpisodeDocument::class)
+                ->remove()
+                ->field('tvdbSeriesId')->equals($tvdbSeriesId)
+                ->getQuery()
+                ->execute();
+
+            // Delete the archive record
             $this->documentManager->remove($archivedSeries);
             $this->documentManager->flush();
             return true;
