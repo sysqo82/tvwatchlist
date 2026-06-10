@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Document\Show;
 use App\Repository\Episode;
 use App\Repository\ArchivedSeries;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -26,6 +27,14 @@ class RemoveSeriesController extends AbstractController
 
             // Delete all episodes for this series
             $episodeRepository->deleteEpisodesWithTvdbSeriesId($tvdbSeriesId);
+
+            // Remove the show from the active collection
+            $showRepository = $documentManager->getRepository(Show::class);
+            $show = $showRepository->findOneBy(['tvdbSeriesId' => $tvdbSeriesId]);
+            if ($show) {
+                $documentManager->remove($show);
+                $documentManager->flush();
+            }
 
             return new JsonResponse(['message' => 'Series archived successfully'], Response::HTTP_OK);
         } catch (\Exception $e) {

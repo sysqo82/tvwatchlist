@@ -6,6 +6,7 @@ namespace App\Command;
 
 use App\Document\Episode;
 use App\Document\Show;
+use App\Document\ArchivedSeries;
 use App\Processor\Ingest;
 use App\Entity\Ingest\Criteria;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -13,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -30,6 +32,16 @@ class UpdateShowsCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        $this->addOption(
+            'full-refresh',
+            'f',
+            InputOption::VALUE_NONE,
+            'Fetch all episodes from the beginning (useful for updating episodes with missing data)'
+        );
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -39,8 +51,28 @@ class UpdateShowsCommand extends Command
         $showRepository = $this->documentManager->getRepository(Show::class);
         $allShows = $showRepository->findAll();
 
-        $totalShows = count($allShows);
-        $io->info("Found {$totalShows} show(s) to update");
+        // Filter out archived shows
+        $archivedRepository = $this->documentManager->getRepository(ArchivedSeries::class);
+        $archivedSeriesQueryBuilder = $archivedRepository->createQueryBuilder()
+            ->select('root.tvdbSeriesId')
+            ->getQuery();
+        $archivedIds = array_map(fn($doc) => $doc->tvdbSeriesId, $archivedSeriesQueryBuilder->execute()->toArray());
+        
+        $activeShows = array_filter($allShows, fn($show) => !in_array($show->tvdbSeriesId, $archivedIds));
+        
+        $totalShows = count($activeShows);
+        $skippedCount = count($allShows) - $totalShows;
+        $fullRefresh = $input->getOption('full-refresh');
+        
+        if ($fullRefresh) {
+            $io->info("Running in FULL REFRESH mode - all episodes will be re-fetched");
+        }
+        
+        if ($skippedCount > 0) {
+            $io->warning("Skipping {$skippedCount} archived show(s)");
+        }
+        
+        $io->info("Found {$totalShows} active show(s) to update");
 
         if ($totalShows === 0) {
             $io->success('No shows to update');
@@ -53,7 +85,7 @@ class UpdateShowsCommand extends Command
         $failed = 0;
         $newEpisodes = 0;
 
-        foreach ($allShows as $show) {
+        foreach ($activeShows as $show) {
             try {
                 $io->progressAdvance();
 
@@ -61,23 +93,28 @@ class UpdateShowsCommand extends Command
 
                 $hadEpisodes = $show->hasEpisodes;
 
-                // Find the latest episode for this show to determine where to start
-                $episodeRepository = $this->documentManager->getRepository(Episode::class);
-                $latestEpisode = $episodeRepository->createQueryBuilder()
-                    ->field('tvdbSeriesId')->equals($show->tvdbSeriesId)
-                    ->sort('season', 'DESC')
-                    ->sort('episode', 'DESC')
-                    ->limit(1)
-                    ->getQuery()
-                    ->getSingleResult();
-
+                // Determine starting point for fetching episodes
                 $fromSeason = 1;
                 $fromEpisode = 1;
 
-                if ($latestEpisode) {
-                    $fromSeason = $latestEpisode->season;
-                    $fromEpisode = $latestEpisode->episode;
-                    $this->logger->info("Latest episode found: S{$fromSeason}E{$fromEpisode}");
+                // Only use latest episode if not doing a full refresh
+                if (!$fullRefresh) {
+                    $episodeRepository = $this->documentManager->getRepository(Episode::class);
+                    $latestEpisode = $episodeRepository->createQueryBuilder()
+                        ->field('tvdbSeriesId')->equals($show->tvdbSeriesId)
+                        ->sort('season', 'DESC')
+                        ->sort('episode', 'DESC')
+                        ->limit(1)
+                        ->getQuery()
+                        ->getSingleResult();
+
+                    if ($latestEpisode) {
+                        $fromSeason = $latestEpisode->season;
+                        $fromEpisode = $latestEpisode->episode;
+                        $this->logger->info("Latest episode found: S{$fromSeason}E{$fromEpisode}");
+                    }
+                } else {
+                    $this->logger->info("Full refresh: fetching from S1E1");
                 }
 
                 $criteria = new Criteria(
