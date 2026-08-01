@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}TV Watchlist{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <!-- Favicon for desktop browsers -->
+        <link rel="icon" type="image/x-icon" href="{{ asset('tv-watchlist.ico') }}">
+        
+        <!-- Favicon for mobile/Apple devices -->
+        <link rel="apple-touch-icon" href="{{ asset('tv-watchlist.ico') }}">
+        
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+        <div id="root"></div>
+    </body>
+</html>

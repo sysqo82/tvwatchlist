@@ -8,7 +8,7 @@
 !/app/images/
 !/app/package*.json
 !/app/public/index.php
-!/app/public/build/
+!/app/public/build/**
 !/app/src/
 !/app/symfony.lock
 !/app/templates/
